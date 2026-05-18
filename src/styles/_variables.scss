@@ -1,0 +1,71 @@
+// ============================================================
+// Aikyam — Bollywood cinematic palette
+// ============================================================
+
+// Saffron family
+$saffron:           #FF9933;
+$deep-saffron:      #FF6B1A;
+$marigold:          #FFA630;
+
+// Gold family
+$gold:              #D4AF37;
+$bright-gold:       #FFC72C;
+$antique-gold:      #C9A227;
+
+// Ruby / red family
+$ruby:              #9B111E;
+$crimson:           #DC143C;
+$vermilion:         #E34234;
+
+// Background / depth
+$maroon:            #3D0A0A;
+$wine:              #1F0303;
+$midnight-plum:     #2A0A1A;
+
+// Highlights / supporting
+$ivory:             #FFF8DC;
+$cream:             #FBF2D4;
+$bronze:            #CD7F32;
+$peacock:           #1B5E78;
+
+// Typography
+$font-display:      'Cinzel', 'Times New Roman', serif;
+$font-sanskrit:     'Tiro Devanagari Sanskrit', 'Noto Serif Devanagari', serif;
+$font-body:         'Cormorant Garamond', Georgia, serif;
+
+// Layout
+$max-content-width: 1200px;
+$hero-min-height:   100vh;
+
+// Motion
+$ease-cinematic:    cubic-bezier(0.65, 0.05, 0.36, 1);
+
+// CSS custom properties — exposed for runtime use
+:root {
+  --color-saffron:        #{$saffron};
+  --color-deep-saffron:   #{$deep-saffron};
+  --color-marigold:       #{$marigold};
+
+  --color-gold:           #{$gold};
+  --color-bright-gold:    #{$bright-gold};
+  --color-antique-gold:   #{$antique-gold};
+
+  --color-ruby:           #{$ruby};
+  --color-crimson:        #{$crimson};
+  --color-vermilion:      #{$vermilion};
+
+  --color-maroon:         #{$maroon};
+  --color-wine:           #{$wine};
+  --color-midnight-plum:  #{$midnight-plum};
+
+  --color-ivory:          #{$ivory};
+  --color-cream:          #{$cream};
+  --color-bronze:         #{$bronze};
+  --color-peacock:        #{$peacock};
+
+  --font-display:         #{$font-display};
+  --font-sanskrit:        #{$font-sanskrit};
+  --font-body:            #{$font-body};
+
+  --ease-cinematic:       #{$ease-cinematic};
+}

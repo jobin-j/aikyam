@@ -1,0 +1,338 @@
+@import '../styles/variables';
+
+.aikyam-chatbot {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  font-family: $font-body;
+  color: $ivory;
+
+  &__toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba($bright-gold, 0.7);
+    background: linear-gradient(135deg, $bright-gold 0%, $deep-saffron 100%);
+    color: #0a0404;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+      0 0 0 1px rgba($bright-gold, 0.15),
+      0 14px 32px rgba(0, 0, 0, 0.55),
+      0 0 28px rgba($deep-saffron, 0.35);
+    transition:
+      transform 0.5s $ease-cinematic,
+      filter 0.5s $ease-cinematic,
+      box-shadow 0.5s $ease-cinematic;
+
+    svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    &:hover,
+    &:focus-visible {
+      transform: translateY(-2px) scale(1.03);
+      filter: brightness(1.08);
+      box-shadow:
+        0 0 0 1px rgba($bright-gold, 0.35),
+        0 18px 40px rgba(0, 0, 0, 0.6),
+        0 0 36px rgba($deep-saffron, 0.5);
+      outline: none;
+    }
+  }
+
+  &__panel {
+    width: min(380px, calc(100vw - 2rem));
+    height: min(560px, calc(100vh - 6rem));
+    display: flex;
+    flex-direction: column;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba($maroon, 0.55) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba($deep-saffron, 0.10) 0%, transparent 55%),
+      linear-gradient(180deg, #0c0606 0%, #0f0707 60%, #060303 100%);
+    border: 1px solid rgba($bright-gold, 0.22);
+    border-radius: 4px;
+    box-shadow:
+      0 0 0 1px rgba($bright-gold, 0.08),
+      0 20px 50px rgba(0, 0, 0, 0.65),
+      0 0 40px rgba($ruby, 0.18);
+    overflow: hidden;
+    animation: aikyam-chatbot-rise 0.45s $ease-cinematic;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.1rem;
+    border-bottom: 1px solid rgba($bright-gold, 0.18);
+    background: linear-gradient(180deg, rgba($maroon, 0.4) 0%, transparent 100%);
+  }
+
+  &__header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__eyebrow {
+    font-family: $font-body;
+    font-size: 0.7rem;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba($bright-gold, 0.85);
+    margin: 0;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-weight: 600;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    margin: 0;
+    background: linear-gradient(180deg, $cream 0%, $bright-gold 65%, $deep-saffron 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  &__close {
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba($bright-gold, 0.3);
+    background: transparent;
+    color: rgba($ivory, 0.85);
+    border-radius: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.4s $ease-cinematic, color 0.4s $ease-cinematic;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    &:hover,
+    &:focus-visible {
+      border-color: rgba($bright-gold, 0.7);
+      color: $cream;
+      outline: none;
+    }
+  }
+
+  &__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba($bright-gold, 0.3) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba($bright-gold, 0.3);
+      border-radius: 3px;
+    }
+  }
+
+  &__message {
+    font-family: $font-body;
+    font-size: 1rem;
+    line-height: 1.55;
+    padding: 0.7rem 0.95rem;
+    border-radius: 3px;
+    max-width: 85%;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+
+    &--assistant {
+      align-self: flex-start;
+      background: linear-gradient(160deg, rgba($maroon, 0.5) 0%, rgba(0, 0, 0, 0.45) 100%);
+      border: 1px solid rgba($bright-gold, 0.22);
+      color: rgba($ivory, 0.92);
+    }
+
+    &--user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba($deep-saffron, 0.85) 0%, rgba($bright-gold, 0.85) 100%);
+      color: #0a0404;
+      border: 1px solid rgba($bright-gold, 0.5);
+      font-weight: 500;
+    }
+
+    &--typing {
+      padding: 0.85rem 1rem;
+    }
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.6rem 0.95rem;
+    color: rgba($ivory, 0.75);
+    font-style: italic;
+    font-size: 0.95rem;
+  }
+
+  &__spinner {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba($bright-gold, 0.25);
+    border-top-color: $bright-gold;
+    animation: aikyam-chatbot-spin 0.9s linear infinite;
+    flex-shrink: 0;
+  }
+
+  &__typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba($bright-gold, 0.85);
+      animation: aikyam-chatbot-blink 1.2s infinite ease-in-out;
+    }
+    span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+  }
+
+  &__error {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid rgba($crimson, 0.55);
+    background: rgba($ruby, 0.18);
+    color: rgba($ivory, 0.9);
+    font-size: 0.9rem;
+    border-radius: 2px;
+  }
+
+  &__input-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    border-top: 1px solid rgba($bright-gold, 0.18);
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  &__input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba($bright-gold, 0.25);
+    border-radius: 2px;
+    padding: 0.6rem 0.8rem;
+    font-family: $font-body;
+    font-size: 1rem;
+    color: $ivory;
+    transition: border-color 0.4s $ease-cinematic;
+
+    &::placeholder {
+      color: rgba($ivory, 0.45);
+      font-style: italic;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: rgba($bright-gold, 0.6);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__send {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    border: 1px solid rgba($bright-gold, 0.55);
+    background: linear-gradient(135deg, $bright-gold 0%, $deep-saffron 100%);
+    color: #0a0404;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+      transform 0.4s $ease-cinematic,
+      filter 0.4s $ease-cinematic;
+
+    svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+      outline: none;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes aikyam-chatbot-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes aikyam-chatbot-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes aikyam-chatbot-blink {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aikyam-chatbot__panel {
+    animation: none;
+  }
+  .aikyam-chatbot__toggle,
+  .aikyam-chatbot__send {
+    transition: none;
+  }
+}

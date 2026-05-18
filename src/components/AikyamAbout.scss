@@ -1,0 +1,189 @@
+@import '../styles/variables';
+
+.aikyam-about {
+  position: relative;
+  width: 100%;
+  padding: clamp(5rem, 10vw, 9rem) clamp(1.25rem, 5vw, 4rem);
+  overflow: hidden;
+  isolation: isolate;
+  color: $ivory;
+
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba($deep-saffron, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba($ruby, 0.10) 0%, transparent 55%),
+    linear-gradient(180deg, #0a0606 0%, #110909 50%, #0a0606 100%);
+
+  &__grain {
+    position: absolute;
+    inset: -10%;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+    z-index: 1;
+  }
+
+  // ---------- Content ----------
+
+  &__content {
+    position: relative;
+    z-index: 2;
+    max-width: $max-content-width;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  &__eyebrow {
+    font-family: $font-body;
+    font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba($bright-gold, 0.85);
+    margin-bottom: 1.4rem;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-weight: 500;
+    line-height: 1.05;
+    font-size: clamp(2.2rem, 5.6vw, 4.4rem);
+    letter-spacing: 0.04em;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+  }
+
+  &__title-line {
+    display: block;
+    font-style: italic;
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
+
+    &--saffron {
+      color: $cream;
+      background: linear-gradient(180deg, $cream 0%, rgba($marigold, 0.85) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    &--gold {
+      color: $bright-gold;
+      background: linear-gradient(180deg, $bright-gold 0%, $deep-saffron 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  &__ornament {
+    width: clamp(180px, 28vw, 260px);
+    height: auto;
+    margin: 2.2rem 0 1.6rem;
+  }
+
+  &__lede {
+    font-family: $font-body;
+    font-style: italic;
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    line-height: 1.65;
+    max-width: 640px;
+    color: rgba($ivory, 0.88);
+    margin: 0 0 clamp(2.5rem, 5vw, 4rem);
+  }
+
+  // ---------- Pillars ----------
+
+  &__pillars {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  &__pillar {
+    position: relative;
+    padding: clamp(1.75rem, 3vw, 2.5rem) clamp(1.25rem, 2vw, 1.75rem);
+    border: 1px solid rgba($bright-gold, 0.18);
+    border-radius: 2px;
+    background:
+      linear-gradient(160deg, rgba($maroon, 0.45) 0%, rgba(0, 0, 0, 0.35) 100%);
+    backdrop-filter: blur(2px);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: aikyam-about-rise 1.2s $ease-cinematic forwards;
+    animation-delay: calc(0.15s * var(--pillar-index, 0) + 0.2s);
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--pillar-accent, #{rgba($bright-gold, 0.6)});
+      pointer-events: none;
+    }
+    &::before {
+      top: 6px;
+      left: 6px;
+      border-right: none;
+      border-bottom: none;
+    }
+    &::after {
+      bottom: 6px;
+      right: 6px;
+      border-left: none;
+      border-top: none;
+    }
+
+    &--saffron { --pillar-accent: #{rgba($saffron, 0.7)}; }
+    &--gold    { --pillar-accent: #{rgba($bright-gold, 0.7)}; }
+    &--ruby    { --pillar-accent: #{rgba($crimson, 0.7)}; }
+  }
+
+  &__pillar-glyph {
+    width: clamp(52px, 6.5vw, 68px);
+    height: clamp(52px, 6.5vw, 68px);
+    filter: drop-shadow(0 0 18px rgba($bright-gold, 0.22));
+  }
+
+  &__pillar-title {
+    font-family: $font-display;
+    font-weight: 500;
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: $bright-gold;
+  }
+
+  &__pillar-body {
+    font-family: $font-body;
+    font-size: clamp(0.98rem, 1.25vw, 1.1rem);
+    line-height: 1.65;
+    color: rgba($ivory, 0.82);
+    max-width: 36ch;
+  }
+}
+
+@keyframes aikyam-about-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aikyam-about__pillar {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
