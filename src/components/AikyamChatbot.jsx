@@ -1,51 +1,64 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './AikyamChatbot.scss';
 
-const SHEET_BASE_URL =
-  'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbZJKItcKbJ6XOev-EyCgbhj2UnpYjnopDk26ZX7ZI59HD34m-hcYoSjdLdu45HPwwK80VJPEhSHGM/pub?output=csv';
+const SHEET_BASE_PUB = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbZJKItcKbJ6XOev-EyCgbhj2UnpYjnopDk26ZX7ZI59HD34m-hcYoSjdLdu45HPwwK80VJPEhSHGM/pub';
 
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const SHEET_URLS = {
+  Band_Info: `${SHEET_BASE_PUB}?gid=0&single=true&output=csv`,
+  Index:     `${SHEET_BASE_PUB}?gid=109174446&single=true&output=csv`,
+};
+
+const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
 
 const OPENING_MESSAGE =
   "Namaste! 🎵 I am AIKYAM's virtual assistant. Ask me about our upcoming gigs, band members, or anything about our music!";
 
 const SYSTEM_PROMPT_PREFIX =
-  "You are AIKYAM's virtual assistant — a Bollywood fusion acoustic duo based in India. Answer questions about the band, members, genre, upcoming gigs and availability. Be warm, friendly and conversational. Only use the data provided below. If something is not in the data, say you don't have that information right now.";
+  "You are AIKYAM's virtual assistant. AIKYAM is a Bollywood fusion acoustic duo based in India. You MUST answer ONLY from the data provided below. Do NOT use any general knowledge or make assumptions. If a gig schedule sheet exists but has no rows of data, say 'No shows are scheduled for that month yet.' If the answer is in the data below, use it. For any booking enquiries or unavailable information, direct them to WhatsApp at +917023384619. Be warm and friendly.";
 
-async function fetchSheet(sheetName) {
-  const url = `${SHEET_BASE_URL}&sheet=${encodeURIComponent(sheetName)}`;
+async function fetchUrl(url) {
   const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch sheet "${sheetName}" (${res.status})`);
-  }
+  if (!res.ok) throw new Error(`Failed to fetch ${url} (${res.status})`);
   return res.text();
 }
 
-function getMonthTabsFromIndex(indexCsv) {
+function parseIndex(indexCsv) {
   const lines = indexCsv
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
-  if (lines.length === 0) return [];
-  // Skip header row, take the first field of each subsequent row.
-  return lines
-    .slice(1)
-    .map((line) => {
-      const quoted = line.match(/^"([^"]*)"/);
-      if (quoted) return quoted[1].trim();
-      const firstCell = line.split(',')[0] || '';
-      return firstCell.trim();
-    })
-    .filter(Boolean);
+  // Skip header row
+  return lines.slice(1).map((line) => {
+    const cols = line.split(',');
+    const name = (cols[0] || '').replace(/"/g, '').trim();
+    const gid  = (cols[1] || '').replace(/"/g, '').trim();
+    return { name, gid };
+  }).filter((r) => r.name && r.gid);
 }
+
+// function getMonthTabsFromIndex(indexCsv) {
+//   const lines = indexCsv
+//     .split(/\r?\n/)
+//     .map((l) => l.trim())
+//     .filter(Boolean);
+//   if (lines.length === 0) return [];
+//   return lines
+//     .slice(1)
+//     .map((line) => {
+//       const quoted = line.match(/^"([^"]*)"/);
+//       if (quoted) return quoted[1].trim();
+//       return (line.split(',')[0] || '').trim();
+//     })
+//     .filter(Boolean);
+// }
 
 async function loadAikyamContext() {
   let bandInfoCsv = '';
-  let monthTabs = [];
+  let tabs = [];
 
   console.log('Fetching Band_Info...');
   try {
-    bandInfoCsv = await fetchSheet('Band_Info');
+    bandInfoCsv = await fetchUrl(SHEET_URLS.Band_Info);
     console.log('Band_Info fetched successfully');
   } catch (err) {
     console.error('Band_Info failed:', err);
@@ -53,30 +66,39 @@ async function loadAikyamContext() {
 
   console.log('Fetching Index...');
   try {
-    const indexCsv = await fetchSheet('Index');
-    monthTabs = getMonthTabsFromIndex(indexCsv);
-    console.log('Index fetched successfully, tabs:', monthTabs);
+    const indexCsv = await fetchUrl(SHEET_URLS.Index);
+    tabs = parseIndex(indexCsv);
+    console.log('Index tabs found:', tabs);
   } catch (err) {
     console.error('Index failed:', err);
   }
 
   const monthResults = [];
-  for (const tab of monthTabs) {
-    console.log(`Fetching ${tab}...`);
+  for (const tab of tabs) {
+    const url = `${SHEET_BASE_PUB}?gid=${tab.gid}&single=true&output=csv`;
+    console.log(`Fetching ${tab.name}...`);
     try {
-      const csv = await fetchSheet(tab);
-      monthResults.push(`## ${tab}\n${csv.trim()}`);
-      console.log(`${tab} fetched successfully`);
+      const csv = await fetchUrl(url);
+      monthResults.push(`## ${tab.name}\n${csv.trim()}`);
+      console.log(`${tab.name} fetched successfully`);
     } catch (err) {
-      console.error(`${tab} failed:`, err);
-      monthResults.push(`## ${tab}\n(schedule unavailable)`);
+      console.error(`${tab.name} failed:`, err);
+      monthResults.push(`## ${tab.name}\n(schedule unavailable)`);
     }
   }
 
   console.log('All data loaded, opening chat');
 
+  const today = new Date().toLocaleDateString('en-IN', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return [
     SYSTEM_PROMPT_PREFIX,
+    `Today's date is: ${today}. Use this to answer questions like "this month", "this week", "upcoming shows" etc.`,
     '',
     'BAND INFO:',
     bandInfoCsv.trim() || '(unavailable)',
