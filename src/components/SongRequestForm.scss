@@ -1,0 +1,565 @@
+@use '../styles/variables' as *;
+
+// ── Animations ──────────────────────────────
+@keyframes sr-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sr-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes sr-glow {
+  0%, 100% { box-shadow: 0 0 24px rgba($maroon, .18), 0 8px 40px rgba($maroon, .12); }
+  50%       { box-shadow: 0 0 40px rgba($gold, .2),   0 8px 40px rgba($maroon, .15); }
+}
+
+@keyframes sr-dot-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.6); opacity: .5; }
+}
+
+@keyframes sr-breathe {
+  0%, 100% { opacity: .75; }
+  50%       { opacity: 1; }
+}
+
+// ── Page ────────────────────────────────────
+.sr-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 20px 80px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba($saffron, .25) 0%, transparent 65%),
+    #C4956A;
+  animation: sr-fade-up .45s ease both;
+}
+
+// ── Card ────────────────────────────────────
+.sr-card {
+  width: 100%;
+  max-width: 460px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: #FFFDF5;
+  border: 1px solid rgba($gold, .5);
+  box-shadow: 0 8px 48px rgba($maroon, .35);
+  animation: sr-glow 5s ease-in-out infinite;
+}
+
+// ── Top shimmer bar ──────────────────────────
+.sr-topbar {
+  height: 3px;
+  background: linear-gradient(90deg, $ruby, $saffron, $gold, $saffron, $ruby);
+  background-size: 200% auto;
+  animation: sr-shimmer 4s linear infinite;
+}
+
+// ── Header ──────────────────────────────────
+.sr-header {
+  padding: 32px 30px 22px;
+  text-align: center;
+  border-bottom: 1px solid rgba($maroon, .15);
+}
+
+.sr-title {
+  font-family: $font-display;
+  font-size: 24px;
+  color: $ruby;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+}
+
+.sr-sub {
+  font-family: $font-body;
+  font-size: 15px;
+  color: rgba($maroon, .7);
+  font-style: italic;
+  letter-spacing: .4px;
+  margin: 0;
+}
+
+// ── Step dots ───────────────────────────────
+.sr-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.sr-step-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sr-step-line {
+  display: block;
+  width: 22px;
+  height: 1px;
+  background: rgba($maroon, .2);
+}
+
+.dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba($maroon, .15);
+  border: 1px solid rgba($maroon, .25);
+  transition: all .4s ease;
+
+  &.done   { background: $saffron;  border-color: $saffron; }
+  &.active { background: $ruby; border-color: $ruby; transform: scale(1.6); animation: sr-dot-pulse 1.5s ease infinite; }
+}
+
+// ── Body ────────────────────────────────────
+.sr-body { padding: 26px 28px 34px; }
+
+.sr-step { animation: sr-fade-up .3s ease both; }
+
+// ── Label ───────────────────────────────────
+.sr-label {
+  display: block;
+  font-family: $font-display;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: rgba($maroon, .7);
+  margin-bottom: 10px;
+}
+
+.sr-optional {
+  font-family: $font-body;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba($maroon, .38);
+}
+
+// ── Search ──────────────────────────────────
+.sr-search-wrap { position: relative; }
+
+.sr-input {
+  width: 100%;
+  padding: 15px 16px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba($maroon, .35);
+  border-radius: 2px;
+  color: $maroon;
+  font-family: $font-body;
+  font-size: 17px;
+  outline: none;
+  transition: border-color .25s, background .25s, box-shadow .25s;
+
+  &::placeholder { color: rgba($maroon, .4); font-style: italic; }
+
+  &:focus {
+    border-color: $saffron;
+    background: rgba($saffron, .06);
+    box-shadow: 0 0 0 3px rgba($saffron, .15);
+  }
+}
+
+.sr-clear {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba($maroon, .35);
+  font-size: 15px;
+  cursor: pointer;
+  transition: color .2s;
+
+  &:hover { color: $maroon; }
+}
+
+// ── Results ─────────────────────────────────
+.sr-results {
+  margin-top: 6px;
+  border: 1px solid rgba($maroon, .2);
+  border-radius: 2px;
+  overflow: hidden;
+  max-height: 290px;
+  overflow-y: auto;
+  box-shadow: 0 10px 36px rgba($maroon, .15);
+  background: #FFFFFF;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb { background: rgba($maroon, .2); border-radius: 2px; }
+}
+
+.sr-result-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba($maroon, .08);
+  cursor: pointer;
+  transition: background .2s;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover {
+    background: rgba($saffron, .12);
+    .sr-result-arrow { opacity: 1; transform: translateX(3px); }
+  }
+}
+
+.sr-result-icon {
+  width: 33px;
+  height: 33px;
+  border-radius: 2px;
+  background: linear-gradient(135deg, rgba($gold, .2), rgba($ruby, .1));
+  border: 1px solid rgba($maroon, .15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.sr-result-info { flex: 1; min-width: 0; }
+
+.sr-result-name {
+  font-family: $font-body;
+  font-size: 15px;
+  font-weight: 600;
+  color: $maroon;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sr-result-meta {
+  font-family: $font-body;
+  font-size: 13px;
+  font-style: italic;
+  color: rgba($maroon, .55);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sr-result-dur {
+  font-family: $font-display;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: rgba($maroon, .4);
+  flex-shrink: 0;
+}
+
+.sr-result-arrow {
+  font-size: 12px;
+  color: $saffron;
+  opacity: 0;
+  transition: opacity .2s, transform .2s;
+  flex-shrink: 0;
+}
+
+.sr-no-results {
+  padding: 30px;
+  text-align: center;
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba($maroon, .4);
+}
+
+// ── Ornament ────────────────────────────────
+.sr-ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $gold;
+  opacity: .55;
+  margin: 20px 0 0;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, $gold);
+  }
+
+  &::after { background: linear-gradient(90deg, $gold, transparent); }
+
+  span { font-size: 12px; flex-shrink: 0; }
+}
+
+// ── Trending ────────────────────────────────
+.sr-trending-head {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba($maroon, .45);
+  margin: 16px 0 10px;
+}
+
+.sr-trending { display: flex; flex-direction: column; gap: 4px; }
+
+.sr-trending-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 13px;
+  background: rgba($maroon, .05);
+  border: 1px solid rgba($maroon, .15);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+
+  &:hover {
+    background: rgba($saffron, .12);
+    border-color: rgba($saffron, .4);
+    transform: translateX(4px);
+    .sr-t-arrow { opacity: 1; }
+  }
+}
+
+.sr-t-name   { font-family: $font-body; font-size: 15px; font-weight: 600; color: $maroon; }
+.sr-t-artist { font-family: $font-body; font-size: 13px; font-style: italic; color: rgba($maroon, .6); margin-top: 2px; }
+.sr-t-arrow  { font-size: 12px; color: $saffron; opacity: 0; transition: opacity .2s; }
+
+// ── Confirm ─────────────────────────────────
+.sr-confirm-card {
+  background: linear-gradient(135deg, rgba($gold, .12), rgba($saffron, .06));
+  border: 1px solid rgba($maroon, .18);
+  border-radius: 2px;
+  padding: 18px;
+  margin-bottom: 14px;
+  background: rgba($gold, .08); 
+  border: 1.5px solid rgba($gold, .3);
+}
+
+.sr-confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba($maroon, .1);
+
+  &:last-child { border-bottom: none; }
+}
+
+.sr-confirm-key {
+  font-family: $font-display;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba($maroon, .45);
+
+  font-size: 10px; color: rgba($maroon, .55);
+}
+
+.sr-confirm-val {
+  font-family: $font-body;
+  font-size: 14px;
+  font-weight: 600;
+  color: $maroon;
+  text-align: right;
+  max-width: 62%;
+
+  font-size: 15px; color: $maroon;
+}
+
+.sr-lyrics {
+  background: rgba($ruby, .08);
+  border-left: 2px solid $ruby;
+  padding: 11px 15px;
+  margin-bottom: 18px;
+  border-radius: 0 2px 2px 0;
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba($maroon, .55);
+  line-height: 1.6;
+}
+
+// ── Dedication ──────────────────────────────
+.sr-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 13px;
+}
+
+.sr-chip {
+  text-align: center;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: $font-body;
+  font-size: 14px;
+  transition: all .2s;
+  padding: 11px 10px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba($maroon, .2);
+  color: rgba($maroon, .65);
+
+  &:hover { border-color: $saffron; color: $maroon; background: rgba($saffron, .1); }
+  &--sel  { border-color: $saffron; color: $ruby;   background: rgba($saffron, .1); }
+}
+
+.sr-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px 14px;
+  border-radius: 2px;
+  font-family: $font-body;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+  background: #FFFFFF;
+  border: 1.5px solid rgba($maroon, .25);
+  color: $maroon;
+  font-size: 15px;
+
+  &::placeholder { color: rgba($maroon, .35); font-style: italic; }
+  &:focus { border-color: $saffron; box-shadow: 0 0 0 3px rgba($saffron, .1); }
+}
+
+.sr-charcount {
+  text-align: right;
+  font-family: $font-display;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba($maroon, .35);
+  margin-top: 4px;
+
+  font-size: 11px; color: rgba($maroon, .4);
+}
+
+// ── Buttons ─────────────────────────────────
+.sr-btn-row { display: flex; flex-direction: column; gap: 0; margin-top: 20px; }
+
+.sr-btn {
+  width: 100%;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 2px;
+  font-family: $font-display;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .25s;
+
+  font-size: 13px; padding: 15px 20px;
+
+  &--primary {
+    background: linear-gradient(135deg, $saffron, $deep-saffron);
+    color: $ivory;
+    box-shadow: 0 4px 18px rgba($saffron, .35);
+
+    &:hover  { transform: translateY(-2px); box-shadow: 0 8px 26px rgba($saffron, .45); }
+    &:active { transform: translateY(0); }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: rgba($maroon, .5);
+    border: 1px solid rgba($maroon, .2);
+    margin-top: 8px;
+
+    &:hover { color: $maroon; border-color: rgba($maroon, .4); background: rgba($maroon, .05); }
+  }
+}
+
+// ── Success ─────────────────────────────────
+.sr-success { text-align: center; }
+
+.sr-success-icon {
+  font-size: 50px;
+  margin-bottom: 16px;
+  animation: sr-breathe 2.5s ease infinite;
+}
+
+.sr-success-title {
+  font-family: $font-display;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: $ruby;
+  margin: 0 0 20px;
+
+  font-size: 22px; color: $ruby;
+}
+
+.sr-success-card {
+  background: linear-gradient(135deg, rgba($gold, .12), rgba($saffron, .06));
+  border: 1px solid rgba($maroon, .18);
+  border-radius: 2px;
+  padding: 16px;
+  margin-bottom: 16px;
+
+  background: #FFFFFF; border: 1.5px solid rgba($maroon, .15);
+}
+
+.sr-success-song   { font-family: $font-body; font-size: 17px; font-weight: 600; color: $maroon; margin-bottom: 4px; font-size: 19px; color: $maroon; }
+.sr-success-artist { font-family: $font-body; font-size: 12px; font-style: italic; color: rgba($maroon, .5); font-size: 14px; color: rgba($maroon, .6); }
+.sr-success-ded    {
+  font-family: $font-body;
+  font-size: 12px;
+  font-style: italic;
+  color: $ruby;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba($maroon, .12);
+}
+
+.sr-pills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sr-pill {
+  background: rgba($saffron, .1);
+  border: 1px solid rgba($saffron, .3);
+  border-radius: 2px;
+  padding: 14px 8px;
+  text-align: center;
+
+  background: rgba($saffron, .1); border: 1.5px solid rgba($saffron, .35);
+}
+
+.sr-pill-num   { font-family: $font-display; font-size: 26px; font-weight: 700; color: $ruby; font-size: 28px; color: $ruby; }
+.sr-pill-label { font-family: $font-display; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: rgba($maroon, .45); margin-top: 4px; font-size: 10px; color: rgba($maroon, .55); }
+
+.sr-enjoy {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba($maroon, .42);
+  margin-top: 14px;
+
+  font-size: 14px; color: rgba($maroon, .5);
+}
+
+// ── Responsive ──────────────────────────────
+@media (max-width: 480px) {
+  .sr-page   { padding: 24px 14px 60px; }
+  .sr-header { padding: 26px 22px 18px; }
+  .sr-title  { font-size: 17px; letter-spacing: 3px; }
+  .sr-body   { padding: 22px 20px 28px; }
+}
