@@ -130,7 +130,21 @@ async function callClaude(systemPrompt, messages) {
 
   if (!res.ok) {
     const errText = await res.text();
-    throw new Error(`Claude API error ${res.status}: ${errText}`);
+    if (res.status === 529) {
+      throw new Error("I'm a little overwhelmed right now 🎵 Please try again in a moment!");
+    } else if (res.status === 429) {
+      throw new Error("Too many requests! 🎵 Please wait a moment and try again.");
+    } else if (res.status === 500) {
+      throw new Error("Something went wrong on our end 🎵 Please try again shortly.");
+    } else if (res.status === 503) {
+      throw new Error("Service temporarily unavailable 🎵 Please try again in a moment.");
+    } else if (res.status === 401) {
+      throw new Error("Authentication error 🎵 Please contact us on WhatsApp at +917023384619.");
+    } else if (res.status === 400) {
+      throw new Error("Something went wrong with your message 🎵 Please try rephrasing it.");
+    } else {
+      throw new Error(`Something went wrong 🎵 Please try again. (${res.status})`);
+    }
   }
 
   const data = await res.json();
