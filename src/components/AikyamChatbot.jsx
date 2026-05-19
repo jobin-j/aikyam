@@ -109,18 +109,10 @@ async function loadAikyamContext() {
 }
 
 async function callClaude(systemPrompt, messages) {
-  const apiKey = process.env.REACT_APP_ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing REACT_APP_ANTHROPIC_API_KEY');
-  }
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/.netlify/functions/claude', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
