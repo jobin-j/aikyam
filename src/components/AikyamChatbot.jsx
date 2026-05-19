@@ -129,7 +129,6 @@ async function callClaude(systemPrompt, messages) {
   });
 
   if (!res.ok) {
-    const errText = await res.text();
     if (res.status === 529) {
       throw new Error("I'm a little overwhelmed right now 🎵 Please try again in a moment!");
     } else if (res.status === 429) {
