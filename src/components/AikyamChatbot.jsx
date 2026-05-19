@@ -14,7 +14,7 @@ const OPENING_MESSAGE =
   "Namaste! 🎵 I am AIKYAM's virtual assistant. Ask me about our upcoming gigs, band members, or anything about our music!";
 
 const SYSTEM_PROMPT_PREFIX =
-  "You are AIKYAM's virtual assistant. AIKYAM is a Bollywood fusion acoustic duo based in India. You MUST answer ONLY from the data provided below. Do NOT use any general knowledge or make assumptions. If a gig schedule sheet exists but has no rows of data, say 'No shows are scheduled for that month yet.' If the answer is in the data below, use it. For any booking enquiries or unavailable information, direct them to WhatsApp at +917023384619. Be warm and friendly.";
+  "You are AIKYAM's virtual assistant. AIKYAM is a Bollywood fusion acoustic duo based in India. You MUST answer ONLY from the data provided below. Do NOT use any general knowledge or make assumptions. If a gig schedule sheet exists but has no rows of data, say 'No shows are scheduled for that month yet.' If the answer is in the data below, use it. For any booking enquiries or unavailable information, direct them to WhatsApp at +919916697933. Be warm and friendly.";
 
 async function fetchUrl(url) {
   const res = await fetch(url);

@@ -39,7 +39,7 @@ When adding a new color, font, or motion token, add it in **both forms** in `_va
 - Name: AIKYAM (Sanskrit: ऐक्यम् — means "unity, oneness, harmony")
 - Genre: Bollywood Fusion / Acoustic / Soulful
 - Members:
-  - Kamal Kishor Vyas — Lead Singer & Acoustic Guitar
+  - Kamal Kishore Vyas — Lead Singer & Acoustic Guitar
   - Jobin John — Drummer / Percussionist
 
 ## Colors
@@ -68,7 +68,7 @@ When adding a new color, font, or motion token, add it in **both forms** in `_va
 
 ## Chatbot Widget (build when asked)
 - Floating widget, bottom-right corner
-- Uses Anthropic Claude API (claude-sonnet-4-20250514)
+- Uses Anthropic Claude API (claude-haiku-4-5-20251001)
 - Fetches public/gigs.json at runtime, injects into system prompt
 - Answers fan questions about upcoming gigs
 

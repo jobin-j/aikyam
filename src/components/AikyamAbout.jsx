@@ -130,10 +130,10 @@ const AikyamAbout = () => {
 
         <h2 className="aikyam-about__title">
           <span className="aikyam-about__title-line aikyam-about__title-line--saffron">
-            Two voices,
+            One voice,
           </span>
           <span className="aikyam-about__title-line aikyam-about__title-line--gold">
-            one rhythm.
+            One rhythm.
           </span>
         </h2>
 

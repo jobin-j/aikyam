@@ -1,7 +1,7 @@
 import React from 'react';
 import './AikyamContact.scss';
 
-const WHATSAPP_URL = 'https://wa.me/918748863927?text=Hi%20Aikyam%2C%20I%20would%20like%20to%20inquire%20about%20booking%20your%20band%20for%20my%20event.';
+const WHATSAPP_URL = 'https://wa.me/+919916697933?text=Hi%20Aikyam%2C%20I%20would%20like%20to%20inquire%20about%20booking%20your%20band%20for%20my%20event.';
 
 const PetalOrnament = () => (
   <svg

@@ -3,7 +3,7 @@ import './AikyamMembers.scss';
 
 const MEMBERS = [
   {
-    name: 'Kamal Kishor Vyas',
+    name: 'Kamal Kishore Vyas',
     initials: 'KKV',
     role: 'Lead Singer · Acoustic Guitar',
     sanskrit: 'स्वर',
