@@ -247,8 +247,14 @@ const AikyamChatbot = () => {
 
     const userMessage = { role: 'user', content: text };
     const apiMessages = [...messages, userMessage]
-      .filter((m) => m.role === 'user' || m.role === 'assistant')
-      .map(({ role, content }) => ({ role, content }));
+    .filter((m) => m.role === 'user' || m.role === 'assistant')
+    .map(({ role, content }) => ({ role, content }))
+    .reduce((acc, msg) => {
+      if (acc.length === 0) return [msg];
+      const last = acc[acc.length - 1];
+      if (last.role === msg.role) return acc;
+      return [...acc, msg];
+    }, []);
 
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
