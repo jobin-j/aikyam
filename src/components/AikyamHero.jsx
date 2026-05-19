@@ -208,9 +208,9 @@ const AikyamHero = () => {
         </div>
       </div>
 
-      <p className="aikyam-hero__members">
+      {/* <p className="aikyam-hero__members">
         Kamal Kishor Vyas &amp; Jobin John — performing across India
-      </p>
+      </p> */}
     </section>
   );
 };
