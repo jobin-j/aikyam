@@ -1,0 +1,333 @@
+@use '../styles/variables' as *;
+
+@keyframes qv-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes qv-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes qv-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .6; }
+}
+
+// ── Page ────────────────────────────────────
+.qv-page {
+  min-height: 100vh;
+  padding: 40px 20px 80px;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba($saffron, .12) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 35% at 100% 100%, rgba($ruby, .08) 0%, transparent 60%),
+    #E8D5B0;
+  animation: qv-fade-up .45s ease both;
+}
+
+.qv-inner { max-width: 460px; margin: 0 auto; }
+
+// ── Header ──────────────────────────────────
+.qv-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.qv-title {
+  font-family: $font-display;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: $ruby;
+  margin: 0 0 6px;
+}
+
+.qv-sub {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba($maroon, .5);
+  margin: 0;
+}
+
+// ── My Request Banner ───────────────────────
+.qv-my-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  animation: qv-fade-up .3s ease both;
+
+  &--pending {
+    background: rgba($saffron, .12);
+    border: 1.5px solid rgba($saffron, .4);
+  }
+
+  &--playing {
+    background: rgba($gold, .12);
+    border: 1.5px solid rgba($gold, .5);
+    animation: qv-pulse 1.5s ease infinite;
+  }
+
+  &--done {
+    background: rgba(80, 200, 100, .08);
+    border: 1.5px solid rgba(80, 200, 100, .3);
+  }
+}
+
+.qv-my-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.qv-my-info { flex: 1; min-width: 0; }
+
+.qv-my-label {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba($maroon, .5);
+  margin-bottom: 4px;
+}
+
+.qv-my-song {
+  font-family: $font-body;
+  font-size: 15px;
+  font-weight: 600;
+  color: $maroon;
+}
+
+.qv-my-pos {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba($maroon, .5);
+  margin-top: 2px;
+}
+
+.qv-my-again {
+  font-family: $font-display;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: $ruby;
+  text-decoration: none;
+  margin-top: 6px;
+  display: block;
+
+  &:hover { opacity: .7; }
+}
+
+// ── Section ─────────────────────────────────
+.qv-section { margin-bottom: 24px; }
+
+.qv-section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.qv-section-title {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba($maroon, .45);
+}
+
+.qv-badge {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 700;
+  background: rgba($ruby, .1);
+  color: $ruby;
+}
+
+// ── Now Playing ─────────────────────────────
+.qv-now {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #FFFDF5;
+  border: 1.5px solid rgba($gold, .35);
+  border-radius: 2px;
+  box-shadow: 0 4px 20px rgba($maroon, .1);
+}
+
+.qv-now-disc {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, $maroon, $ruby);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: $ivory;
+}
+
+.qv-now-info { flex: 1; min-width: 0; }
+
+.qv-now-song {
+  font-family: $font-body;
+  font-size: 15px;
+  font-weight: 600;
+  color: $maroon;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qv-now-artist {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba($maroon, .5);
+  margin-top: 2px;
+}
+
+.qv-now-ded {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 12px;
+  color: $crimson;
+  margin-top: 3px;
+}
+
+// ── Queue List ───────────────────────────────
+.qv-list { display: flex; flex-direction: column; gap: 5px; }
+
+.qv-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #FFFDF5;
+  border: 1px solid rgba($maroon, .1);
+  border-radius: 2px;
+  transition: all .2s;
+
+  &.qv-mine {
+    background: rgba($saffron, .08);
+    border: 1.5px solid rgba($saffron, .4);
+  }
+}
+
+.qv-row-pos {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba($maroon, .06);
+  border: 1px solid rgba($maroon, .15);
+  font-family: $font-display;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba($maroon, .45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qv-row-info { flex: 1; min-width: 0; }
+
+.qv-row-song {
+  font-family: $font-body;
+  font-size: 14px;
+  font-weight: 600;
+  color: $maroon;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qv-row-artist {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba($maroon, .5);
+  margin-top: 2px;
+}
+
+.qv-row-ded {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 12px;
+  color: $crimson;
+  margin-top: 3px;
+}
+
+// ── Mine Badge ───────────────────────────────
+.qv-mine-badge {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: $ruby;
+  background: rgba($ruby, .08);
+  border: 1px solid rgba($ruby, .2);
+  padding: 3px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+// ── Empty ────────────────────────────────────
+.qv-empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.qv-empty-icon { font-size: 32px; opacity: .3; margin-bottom: 10px; }
+
+.qv-empty-text {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba($maroon, .4);
+}
+
+// ── Request Button ───────────────────────────
+.qv-request-btn {
+  display: block;
+  width: 100%;
+  padding: 14px 20px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, $saffron, $deep-saffron);
+  color: $ivory;
+  font-family: $font-display;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 2px;
+  box-shadow: 0 4px 18px rgba($saffron, .3);
+  transition: all .25s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba($saffron, .4); }
+}
+
+.qv-my-banner--skipped {
+  background: rgba($crimson, .06);
+  border: 1.5px solid rgba($crimson, .25);
+}
+
+// ── Responsive ──────────────────────────────
+@media (max-width: 480px) {
+  .qv-page  { padding: 24px 14px 60px; }
+  .qv-title { font-size: 18px; }
+}

@@ -5,6 +5,8 @@ import AikyamMembers from './components/AikyamMembers';
 import AikyamContact from './components/AikyamContact';
 import AikyamChatbot from './components/AikyamChatbot';
 import SongRequestForm from './components/SongRequestForm';
+import PerformerGuard from './components/PerformerGuard';
+import QueueView from './components/QueueView';
 
 function App() {
   const [view, setView] = useState(() => {
@@ -37,19 +39,10 @@ function App() {
         <AikyamChatbot />
       </>)}
       {view === 'request'   && <SongRequestForm />}
-      {/* {view === 'queue'     && <QueueView />}
-      {view === 'performer' && <PerformerGuard />} */}
+      {view === 'performer' && <PerformerGuard />}
+      {view === 'queue' && <QueueView />}
     </div>
   );
-  // return (
-  //   <main className="app">
-  //     <AikyamHero />
-  //     <AikyamAbout />
-  //     <AikyamMembers />
-  //     <AikyamContact />
-  //     <AikyamChatbot />
-  //   </main>
-  // );
 }
 
 export default App;

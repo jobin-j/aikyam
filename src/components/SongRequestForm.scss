@@ -556,6 +556,52 @@
   font-size: 14px; color: rgba($maroon, .5);
 }
 
+.sr-error {
+  font-family: $font-body;
+  font-size: 13px;
+  font-style: italic;
+  color: $crimson;
+  text-align: center;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba($crimson, .06);
+  border: 1px solid rgba($crimson, .2);
+  border-radius: 2px;
+}
+
+.sr-btn--primary:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.sr-btn--queue {
+  display: block;
+  width: 100%;
+  padding: 13px 20px;
+  margin-bottom: 8px;
+  border: 1.5px solid rgba($maroon, .25);
+  border-radius: 2px;
+  background: transparent;
+  color: $maroon;
+  font-family: $font-display;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .25s;
+
+  &:hover {
+    border-color: $ruby;
+    color: $ruby;
+    background: rgba($ruby, .04);
+  }
+}
+
 // ── Responsive ──────────────────────────────
 @media (max-width: 480px) {
   .sr-page   { padding: 24px 14px 60px; }
