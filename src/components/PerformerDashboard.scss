@@ -625,6 +625,20 @@
   &:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 }
 
+.pd-bulk-btn--skip {
+  background: transparent;
+  color: $crimson;
+  border: 2px solid rgba($crimson, .35);
+  box-shadow: none;
+
+  &:hover {
+    background: rgba($crimson, .08);
+    border-color: rgba($crimson, .55);
+    box-shadow: none;
+    transform: translateY(-1px);
+  }
+}
+
 // ── Responsive ──────────────────────────────
 @media (max-width: 480px) {
   .pd-page     { padding: 20px 14px 60px; }

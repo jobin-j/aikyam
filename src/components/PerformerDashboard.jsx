@@ -44,21 +44,37 @@ export default function PerformerDashboard() {
   );
 };
 
-const bulkComplete = async () => {
-  setLoadingId('bulk');
-  try {
-    await Promise.all(selectedIds.map(id => updateStatus(id, 'completed')));
-    setRequests(q => q.map(r =>
-      selectedIds.includes(r.id) ? { ...r, status: 'completed' } : r
-    ));
-    setSelectedIds([]);
-    showToast(`${selectedIds.length} requests marked complete ✓`);
-  } catch {
-    showToast('Failed to update. Try again.', 'error');
-  } finally {
-    setLoadingId(null);
-  }
-};
+  const bulkComplete = async () => {
+    setLoadingId('bulk');
+    try {
+      await Promise.all(selectedIds.map(id => updateStatus(id, 'completed')));
+      setRequests(q => q.map(r =>
+        selectedIds.includes(r.id) ? { ...r, status: 'completed' } : r
+      ));
+      setSelectedIds([]);
+      showToast(`${selectedIds.length} requests marked complete ✓`);
+    } catch {
+      showToast('Failed to update. Try again.', 'error');
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const bulkSkip = async () => {
+    setLoadingId('bulk');
+    try {
+      await Promise.all(selectedIds.map(id => updateStatus(id, 'skipped')));
+      setRequests(q => q.map(r =>
+        selectedIds.includes(r.id) ? { ...r, status: 'skipped' } : r
+      ));
+      setSelectedIds([]);
+      showToast(`${selectedIds.length} requests skipped ⊘`);
+    } catch {
+      showToast('Failed to update. Try again.', 'error');
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
   const playing   = requests.find(r => r.status === 'playing');
   const pending   = requests.filter(r =>
@@ -200,15 +216,26 @@ const bulkComplete = async () => {
                     <span className="pd-badge">{pending.length}</span>
                   )}
                   {selectedIds.length > 0 && (
-                    <button
-                      className="pd-bulk-btn"
-                      onClick={bulkComplete}
-                      disabled={loadingId === 'bulk'}
-                    >
-                      {loadingId === 'bulk'
-                        ? <AikyamSpinner color="#FFFDF5" />
-                        : `Mark Selected (${selectedIds.length}) ✓`}
-                    </button>
+                    <>
+                      <button
+                        className="pd-bulk-btn pd-bulk-btn--skip"
+                        onClick={bulkSkip}
+                        disabled={loadingId === 'bulk'}
+                      >
+                        {loadingId === 'bulk'
+                          ? <AikyamSpinner color="#DC143C" />
+                          : `Skip Selected (${selectedIds.length}) ⊘`}
+                      </button>
+                      <button
+                        className="pd-bulk-btn"
+                        onClick={bulkComplete}
+                        disabled={loadingId === 'bulk'}
+                      >
+                        {loadingId === 'bulk'
+                          ? <AikyamSpinner color="#FFFDF5" />
+                          : `Mark Selected (${selectedIds.length}) ✓`}
+                      </button>
+                    </>
                   )}
                 </div>
 
@@ -238,20 +265,20 @@ const bulkComplete = async () => {
                           </div>
                           <div className="pd-row-actions">
                               <button
-                              className="pd-action pd-action--play"
-                              onClick={() => markPlaying(r.id)}
-                              disabled={loadingId === r.id}
-                              title="Play now"
+                                className="pd-action pd-action--play"
+                                onClick={() => markPlaying(r.id)}
+                                disabled={loadingId === r.id || selectedIds.length > 0}
+                                title={selectedIds.length > 0 ? 'Deselect all to play' : 'Play now'}
                               >
-                              {loadingId === r.id ? '…' : '▶'}
+                                {loadingId === r.id ? <AikyamSpinner color="#2a8a3e" /> : '▶'}
                               </button>
                               <button
-                              className="pd-action pd-action--skip"
-                              onClick={() => skip(r.id)}
-                              disabled={loadingId === r.id}
-                              title="Skip"
+                                className="pd-action pd-action--skip"
+                                onClick={() => skip(r.id)}
+                                disabled={loadingId === r.id || selectedIds.length > 0}
+                                title={selectedIds.length > 0 ? 'Use bulk skip below' : 'Skip'}
                               >
-                              {loadingId === r.id ? '…' : '⊘'}
+                                {loadingId === r.id ? <AikyamSpinner color="#DC143C" /> : '⊘'}
                               </button>
                           </div>
                         </div>
