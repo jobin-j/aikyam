@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getRequests, deleteRequest } from '../services/googleSheets';
 import AikyamSpinner from './AikyamSpinner';
 import './QueueView.scss';
@@ -25,21 +25,22 @@ export default function QueueView() {
   const [cancelling, setCancelling] = useState(null);
   const sessionKey = localStorage.getItem('aikyam_session');
 
+  const fetchRequests = useCallback(async () => {
+    try {
+      const data = await getRequests();
+      setRequests(data);
+    } catch (err) {
+      console.error('Failed to fetch queue:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const data = await getRequests();
-        setRequests(data);
-      } catch (err) {
-        console.error('Failed to fetch queue:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchRequests();
     const poll = setInterval(fetchRequests, 3000);
     return () => clearInterval(poll);
-  }, []);
+  }, [fetchRequests]);
 
   const today = new Date().toDateString();
 
@@ -68,7 +69,7 @@ export default function QueueView() {
     try {
       await deleteRequest(id);
       removeMyRequestId(id);
-      setRequests(prev => prev.filter(r => r.id !== id));
+      await fetchRequests();
     } catch (err) {
       console.error('Failed to cancel:', err);
     } finally {
@@ -90,57 +91,45 @@ export default function QueueView() {
 
         {/* ── My Request Banners ── */}
         {myRequests
-        .filter(r => getStatus(r) !== 'pending')
-        .slice(0, 2)                              // ← max 2 notifications
-        .map(myRequest => {
-          const myStatus   = getStatus(myRequest);
-          const myPosition = pending.findIndex(r => r.id === myRequest.id) + 1;
-
-          return (
-            <div key={myRequest.id} className={`qv-my-banner qv-my-banner--${myStatus}`}>
-              {myStatus === 'pending' && (
-                <>
-                  <div className="qv-my-icon">🎵</div>
-                  <div className="qv-my-info">
-                    <div className="qv-my-label">Your Request</div>
-                    <div className="qv-my-song">{myRequest.song}</div>
-                    <div className="qv-my-pos">Position #{myPosition} in queue</div>
-                  </div>
-                </>
-              )}
-              {myStatus === 'playing' && (
-                <>
-                  <div className="qv-my-icon">▶</div>
-                  <div className="qv-my-info">
-                    <div className="qv-my-label">Now Playing!</div>
-                    <div className="qv-my-song">{myRequest.song}</div>
-                  </div>
-                </>
-              )}
-              {myStatus === 'done' && (
-                <>
-                  <div className="qv-my-icon">✓</div>
-                  <div className="qv-my-info">
-                    <div className="qv-my-label">Your song was played!</div>
-                    <div className="qv-my-song">{myRequest.song}</div>
-                    <a className="qv-my-again" href="#/request">Request another →</a>
-                  </div>
-                </>
-              )}
-              {myStatus === 'skipped' && (
-                <>
-                  <div className="qv-my-icon">😔</div>
-                  <div className="qv-my-info">
-                    <div className="qv-my-label">Sorry!</div>
-                    <div className="qv-my-song">{myRequest.song}</div>
-                    <div className="qv-my-pos">We don't know this one. Try another?</div>
-                    <a className="qv-my-again" href="#/request">Request a different song →</a>
-                  </div>
-                </>
-              )}
-            </div>
-          );
-        })}
+          .filter(r => getStatus(r) !== 'pending')
+          .slice(0, 2)
+          .map(myRequest => {
+            const myStatus = getStatus(myRequest);
+            return (
+              <div key={myRequest.id} className={`qv-my-banner qv-my-banner--${myStatus}`}>
+                {myStatus === 'playing' && (
+                  <>
+                    <div className="qv-my-icon">▶</div>
+                    <div className="qv-my-info">
+                      <div className="qv-my-label">Now Playing!</div>
+                      <div className="qv-my-song">{myRequest.song}</div>
+                    </div>
+                  </>
+                )}
+                {myStatus === 'done' && (
+                  <>
+                    <div className="qv-my-icon">✓</div>
+                    <div className="qv-my-info">
+                      <div className="qv-my-label">Your song was played!</div>
+                      <div className="qv-my-song">{myRequest.song}</div>
+                      <a className="qv-my-again" href="#/request">Request another →</a>
+                    </div>
+                  </>
+                )}
+                {myStatus === 'skipped' && (
+                  <>
+                    <div className="qv-my-icon">😔</div>
+                    <div className="qv-my-info">
+                      <div className="qv-my-label">Sorry!</div>
+                      <div className="qv-my-song">{myRequest.song}</div>
+                      <div className="qv-my-pos">We don't know this one. Try another?</div>
+                      <a className="qv-my-again" href="#/request">Request a different song →</a>
+                    </div>
+                  </>
+                )}
+              </div>
+            );
+          })}
 
         {/* ── Now Playing ── */}
         {playing && (
