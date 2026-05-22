@@ -89,9 +89,11 @@ export default function QueueView() {
         </div>
 
         {/* ── My Request Banners ── */}
-        {myRequests.map(myRequest => {
+        {myRequests
+        .filter(r => getStatus(r) !== 'pending')
+        .slice(0, 2)                              // ← max 2 notifications
+        .map(myRequest => {
           const myStatus   = getStatus(myRequest);
-          if (myStatus === 'pending') return null; // ← add this line
           const myPosition = pending.findIndex(r => r.id === myRequest.id) + 1;
 
           return (
