@@ -37,7 +37,6 @@ export const addRequest = async ({ song, dedication, sessionKey }) => {
       session_key:     sessionKey,
     }),
   });
-  const data = await res.json();
 
   // Get queue position
   const queueRes = await fetch(
