@@ -5,6 +5,7 @@ import './QueueView.scss';
 
 const fmtAgo = d => {
   const s = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (isNaN(s) || s < 0) return 'just now';
   if (s < 60)   return 'just now';
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
   return `${Math.floor(s / 3600)}h ago`;
@@ -13,7 +14,8 @@ const fmtAgo = d => {
 export default function QueueView() {
   const [requests, setRequests] = useState([]);
   const [loading,  setLoading]  = useState(true);
-  const myId = localStorage.getItem('aikyam_request_id');
+  const sessionKey = localStorage.getItem('aikyam_session');
+  const myRequestId = localStorage.getItem('aikyam_request_id'); // for banner only
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -32,9 +34,18 @@ export default function QueueView() {
     return () => clearInterval(poll);
   }, []);
 
-  const pending   = requests.filter(r => r.status === 'pending');
+  const today = new Date().toDateString();
+
+  const pending = requests.filter(r =>
+    r.status === 'pending' &&
+    new Date(r.timestamp).toDateString() === today
+  );
+
   const playing   = requests.find(r => r.status === 'playing');
-  const myRequest = requests.find(r => r.id === myId);
+  const myRequest = requests.find(r =>
+    r.id === myRequestId &&
+    new Date(r.timestamp).toDateString() === today
+  );
 
   const getMyStatus = () => {
     if (!myRequest) return null;
@@ -45,7 +56,7 @@ export default function QueueView() {
   };
 
   const myStatus   = getMyStatus();
-  const myPosition = pending.findIndex(r => r.id === myId) + 1;
+  const myPosition = pending.findIndex(r => r.sessionKey === sessionKey) + 1;
 
   return (
     <div className="qv-page">
@@ -115,7 +126,7 @@ export default function QueueView() {
             <div className="qv-section-head">
               <span className="qv-section-title">▶ Now Playing</span>
             </div>
-            <div className={`qv-now ${playing.id === myId ? 'qv-mine' : ''}`}>
+            <div className={`qv-now ${playing.sessionKey === sessionKey ? 'qv-mine' : ''}`}>
               <div className="qv-now-disc">♪</div>
               <div className="qv-now-info">
                 <div className="qv-now-song">{playing.song}</div>
@@ -124,9 +135,7 @@ export default function QueueView() {
                   <div className="qv-now-ded">{playing.dedication}</div>
                 )}
               </div>
-              {playing.id === myId && (
-                <div className="qv-mine-badge">Yours!</div>
-              )}
+              {playing.sessionKey === sessionKey && <div className="qv-mine-badge">Yours!</div>}
             </div>
           </div>
         )}
@@ -145,7 +154,7 @@ export default function QueueView() {
               {pending.map((r, i) => (
                 <div
                   key={r.id}
-                  className={`qv-row ${r.id === myId ? 'qv-mine' : ''}`}
+                  className={`qv-row ${r.sessionKey === sessionKey ? 'qv-mine' : ''}`}
                 >
                   <div className="qv-row-pos">{i + 1}</div>
                   <div className="qv-row-info">
@@ -157,16 +166,14 @@ export default function QueueView() {
                       <div className="qv-row-ded">{r.dedication}</div>
                     )}
                   </div>
-                  {r.id === myId && (
-                    <div className="qv-mine-badge">Yours!</div>
-                  )}
+                  {r.sessionKey === sessionKey && <div className="qv-mine-badge">Yours!</div>}
                 </div>
               ))}
             </div>
           ) : (
             <div className="qv-empty">
               <div className="qv-empty-icon">🎶</div>
-              <div className="qv-empty-text">No pending requests</div>
+              <div className="qv-empty-text">Be the first to request a song!</div>
             </div>
           )}
         </div>

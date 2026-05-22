@@ -8,10 +8,18 @@ const CHIPS = ['Birthday 🎂', 'Anniversary 💑', 'Special ❤️', 'Friend �
 const toTitleCase = str =>
   str.replace(/\w\S*/g, word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
 
+const getSessionKey = () => {
+  let key = localStorage.getItem('aikyam_session');
+  if (!key) {
+    key = Date.now().toString(36);
+    localStorage.setItem('aikyam_session', key);
+  }
+  return key;
+};
+
 export default function SongRequestForm() {
   const [step,        setStep]        = useState(1);
   const [songName,    setSongName]    = useState('');
-  const [artist,      setArtist]      = useState('');
   const [chipSel,     setChipSel]     = useState('');
   const [ded,         setDed]         = useState('');
   const [submitting,  setSubmitting]  = useState(false);
@@ -26,11 +34,11 @@ export default function SongRequestForm() {
     setSubmitError(false);
     try {
       const res = await addRequest({
-        song:          songName,
-        artistOrMovie: artist,
-        dedication:    ded || null,
+        song: songName,
+        dedication: ded || null,
+        sessionKey: getSessionKey(),
       });
-      localStorage.setItem('aikyam_request_id', res.id);
+      localStorage.setItem('aikyam_request_id', res.id); // keep for banner
       setQueuePos(res.position);
       setStep(3);
     } catch (err) {
@@ -42,7 +50,7 @@ export default function SongRequestForm() {
   };
 
   const reset = () => {
-    setStep(1); setSongName(''); setArtist('');
+    setStep(1); setSongName('');
     setChipSel(''); setDed(''); setSubmitError(false);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
@@ -73,28 +81,16 @@ export default function SongRequestForm() {
             {/* ── Step 1: Song Details ── */}
             {step === 1 && (
               <div className="sr-step">
-                <label className="sr-label">Song Name</label>
+                <label className="sr-label">What would you like to hear?</label>
                 <input
                   ref={inputRef}
                   autoFocus
                   className="sr-input"
-                  placeholder="e.g. Tum Hi Ho…"
+                  placeholder="e.g. Tum Hi Ho, Any Aashiqui 2 song…"
                   value={songName}
                   onChange={e => setSongName(toTitleCase(e.target.value))}
                   onKeyDown={e => e.key === 'Enter' && songName.trim() && setStep(2)}
                 />
-
-                <label className="sr-label" style={{ marginTop: '16px' }}>
-                  Artist or Movie <span className="sr-optional">— Optional</span>
-                </label>
-                <input
-                  className="sr-input"
-                  placeholder="e.g. Arijit Singh or Aashiqui 2…"
-                  value={artist}
-                  onChange={e => setArtist(toTitleCase(e.target.value))}
-                  onKeyDown={e => e.key === 'Enter' && songName.trim() && setStep(2)}
-                />
-
                 <div className="sr-btn-row">
                   <button
                     className="sr-btn sr-btn--primary"
@@ -166,7 +162,6 @@ export default function SongRequestForm() {
                   <h2 className="sr-success-title">Request Sent!</h2>
                   <div className="sr-success-card">
                     <div className="sr-success-song">{songName}</div>
-                    <div className="sr-success-artist">{artist}</div>
                     {ded && <div className="sr-success-ded">"{ded}"</div>}
                   </div>
                   <div className="sr-pills">

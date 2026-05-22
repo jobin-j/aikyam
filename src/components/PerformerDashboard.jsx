@@ -4,7 +4,8 @@ import { getRequests, updateStatus } from '../services/googleSheets';
 import AikyamSpinner from './AikyamSpinner';
 
 const fmtAgo = d => {
-  const s = Math.floor((Date.now() - d) / 1000);
+  const s = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (isNaN(s) || s < 0) return 'just now';
   if (s < 60)   return 'just now';
   if (s < 3600) return `${Math.floor(s / 60)}m ago`;
   return `${Math.floor(s / 3600)}h ago`;
@@ -15,6 +16,7 @@ export default function PerformerDashboard() {
   const [filter,    setFilter]    = useState('');
   const [loadingId, setLoadingId] = useState(null);
   const [toast,     setToast]     = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -36,6 +38,28 @@ export default function PerformerDashboard() {
     return () => clearInterval(poll);
   }, []);
 
+  const toggleSelect = id => {
+  setSelectedIds(prev =>
+    prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+  );
+};
+
+const bulkComplete = async () => {
+  setLoadingId('bulk');
+  try {
+    await Promise.all(selectedIds.map(id => updateStatus(id, 'completed')));
+    setRequests(q => q.map(r =>
+      selectedIds.includes(r.id) ? { ...r, status: 'completed' } : r
+    ));
+    setSelectedIds([]);
+    showToast(`${selectedIds.length} requests marked complete ✓`);
+  } catch {
+    showToast('Failed to update. Try again.', 'error');
+  } finally {
+    setLoadingId(null);
+  }
+};
+
   const playing   = requests.find(r => r.status === 'playing');
   const pending   = requests.filter(r =>
     r.status === 'pending' && (
@@ -45,7 +69,11 @@ export default function PerformerDashboard() {
         : true
     )
   );
-  const completed = requests.filter(r => r.status === 'completed');
+
+  const today = new Date().toDateString();
+  const completed = requests
+    .filter(r => r.status === 'completed' && new Date(r.timestamp).toDateString() === today)
+    .slice(-5); // last 5 of tonight only
 
   const markCompleted = async id => {
     setLoadingId(id);
@@ -106,7 +134,7 @@ export default function PerformerDashboard() {
                 <div className="pd-header">
                 <div>
                     <h1 className="pd-title">Live Queue</h1>
-                    <p className="pd-sub">AIKYAM · Kamal &amp; Jobin</p>
+                    <p className="pd-sub">AIKYAM</p>
                 </div>
                 <div className="pd-stats">
                     <div className="pd-stat">
@@ -126,7 +154,7 @@ export default function PerformerDashboard() {
                     className="pd-filter"
                     placeholder="Filter by song or artist…"
                     value={filter}
-                    onChange={e => setFilter(e.target.value)}
+                    onChange={e => { setFilter(e.target.value); setSelectedIds([]); }}
                 />
                 {filter && (
                     <button className="pd-filter-clear" onClick={() => setFilter('')}>✕</button>
@@ -167,52 +195,72 @@ export default function PerformerDashboard() {
                 {/* ── Pending Queue ── */}
                 <div className="pd-section">
                 <div className="pd-section-head">
-                    <span className="pd-section-title">Queue</span>
-                    {pending.length > 0 && (
+                  <span className="pd-section-title">Queue</span>
+                  {pending.length > 0 && (
                     <span className="pd-badge">{pending.length}</span>
-                    )}
+                  )}
+                  {selectedIds.length > 0 && (
+                    <button
+                      className="pd-bulk-btn"
+                      onClick={bulkComplete}
+                      disabled={loadingId === 'bulk'}
+                    >
+                      {loadingId === 'bulk'
+                        ? <AikyamSpinner color="#FFFDF5" />
+                        : `Mark Selected (${selectedIds.length}) ✓`}
+                    </button>
+                  )}
                 </div>
 
                 {pending.length > 0 ? (
                     <div className="pd-queue">
                     {pending.map((r, i) => (
-                        <div key={r.id} className="pd-row">
-                        <div className="pd-row-pos">{i + 1}</div>
-                        <div className="pd-row-info">
-                            <div className="pd-row-song">{r.song}</div>
-                            {r.artistOrMovie && (
-                            <div className="pd-row-artist">{r.artistOrMovie}</div>
-                            )}
-                            {r.dedication && (
-                            <div className="pd-row-ded">{r.dedication}</div>
-                            )}
-                            <div className="pd-row-meta">{fmtAgo(r.ts)}</div>
-                        </div>
-                        <div className="pd-row-actions">
-                            <button
-                            className="pd-action pd-action--play"
-                            onClick={() => markPlaying(r.id)}
-                            disabled={loadingId === r.id}
-                            title="Play now"
-                            >
-                            {loadingId === r.id ? '…' : '▶'}
-                            </button>
-                            <button
-                            className="pd-action pd-action--skip"
-                            onClick={() => skip(r.id)}
-                            disabled={loadingId === r.id}
-                            title="Skip"
-                            >
-                            {loadingId === r.id ? '…' : '⊘'}
-                            </button>
-                        </div>
+                        <div
+                          key={r.id}
+                          className={`pd-row ${selectedIds.includes(r.id) ? 'pd-row--selected' : ''}`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="pd-checkbox"
+                            checked={selectedIds.includes(r.id)}
+                            onChange={() => toggleSelect(r.id)}
+                          />
+                          <div className="pd-row-pos">{i + 1}</div>
+                          <div className="pd-row-info">
+                              <div className="pd-row-song">{r.song}</div>
+                              {r.artistOrMovie && (
+                              <div className="pd-row-artist">{r.artistOrMovie}</div>
+                              )}
+                              {r.dedication && (
+                              <div className="pd-row-ded">{r.dedication}</div>
+                              )}
+                              <div className="pd-row-meta">{fmtAgo(r.ts)}</div>
+                          </div>
+                          <div className="pd-row-actions">
+                              <button
+                              className="pd-action pd-action--play"
+                              onClick={() => markPlaying(r.id)}
+                              disabled={loadingId === r.id}
+                              title="Play now"
+                              >
+                              {loadingId === r.id ? '…' : '▶'}
+                              </button>
+                              <button
+                              className="pd-action pd-action--skip"
+                              onClick={() => skip(r.id)}
+                              disabled={loadingId === r.id}
+                              title="Skip"
+                              >
+                              {loadingId === r.id ? '…' : '⊘'}
+                              </button>
+                          </div>
                         </div>
                     ))}
                     </div>
                 ) : (
                     <div className="pd-empty">
-                    <div className="pd-empty-icon">🎶</div>
-                    <div className="pd-empty-text">No pending requests</div>
+                      <div className="pd-empty-icon">🎵</div>
+                      <div className="pd-empty-text">The stage is yours — no requests yet!</div>
                     </div>
                 )}
                 </div>

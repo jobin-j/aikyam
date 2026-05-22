@@ -8,14 +8,14 @@ export const getRequests = async () => {
 };
 
 // ── Add new request ───────────────────────────
-export const addRequest = async ({ song, artistOrMovie, dedication }) => {
-  const res  = await fetch(SCRIPT_URL, {
+export const addRequest = async ({ song, dedication, sessionKey }) => {
+  const res = await fetch(SCRIPT_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'text/plain' },
-    body:    JSON.stringify({ song, artistOrMovie, dedication }),
+    body:    JSON.stringify({ song, dedication, sessionKey }),
   });
   const data = await res.json();
-  return data; // { success: true, id, position }
+  return data;
 };
 
 // ── Update request status ─────────────────────
