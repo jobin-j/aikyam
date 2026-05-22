@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import './SongRequestForm.scss';
-import { addRequest, getRequests } from '../services/googleSheets';
+import { addRequest, getRequests } from '../services/supabase';
 import AikyamSpinner from './AikyamSpinner';
 import SongSuggester from './SongSuggester';
 

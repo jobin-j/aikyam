@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getRequests, deleteRequest } from '../services/googleSheets';
+import { getRequests, deleteRequest } from '../services/supabase';
 import AikyamSpinner from './AikyamSpinner';
 import './QueueView.scss';
 
@@ -20,9 +20,10 @@ const removeMyRequestId = (id) => {
 };
 
 export default function QueueView() {
-  const [requests,   setRequests]   = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [cancelling, setCancelling] = useState(null);
+  const [requests,    setRequests]    = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [cancelling,  setCancelling]  = useState(null);
+  const [dismissedIds, setDismissedIds] = useState([]);
   const sessionKey = localStorage.getItem('aikyam_session');
 
   const fetchRequests = useCallback(async () => {
@@ -77,6 +78,10 @@ export default function QueueView() {
     }
   };
 
+  const dismiss = (id) => {
+    setDismissedIds(prev => [...prev, id]);
+  };
+
   return (
     <div className="qv-page">
       {loading && <AikyamSpinner color="#FF9933" />}
@@ -92,11 +97,19 @@ export default function QueueView() {
         {/* ── My Request Banners ── */}
         {myRequests
           .filter(r => getStatus(r) !== 'pending')
+          .filter(r => !dismissedIds.includes(r.id))
           .slice(0, 2)
           .map(myRequest => {
             const myStatus = getStatus(myRequest);
             return (
               <div key={myRequest.id} className={`qv-my-banner qv-my-banner--${myStatus}`}>
+                <button
+                  className="qv-banner-close"
+                  onClick={() => dismiss(myRequest.id)}
+                  title="Dismiss"
+                >
+                  ✕
+                </button>
                 {myStatus === 'playing' && (
                   <>
                     <div className="qv-my-icon">▶</div>

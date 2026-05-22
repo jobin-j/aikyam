@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import './PerformerDashboard.scss';
-import { getRequests, updateStatus } from '../services/googleSheets';
+import { getRequests, updateStatus } from '../services/supabase';
 import AikyamSpinner from './AikyamSpinner';
 
 const fmtAgo = d => {
