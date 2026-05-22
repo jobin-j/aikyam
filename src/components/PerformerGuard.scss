@@ -1,0 +1,129 @@
+@use '../styles/variables' as *;
+
+.pg-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba($saffron, .07) 0%, transparent 65%),
+    $wine;
+}
+
+.pg-card {
+  width: 100%;
+  max-width: 320px;
+  padding: 48px 32px;
+  background: linear-gradient(160deg, lighten($maroon, 6%) 0%, $maroon 100%);
+  border: 1px solid rgba($gold, .2);
+  border-radius: 3px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .6);
+}
+
+.pg-topbar {
+  height: 3px;
+  margin: -48px -32px 36px;
+  background: linear-gradient(90deg, $ruby, $saffron, $gold, $saffron, $ruby);
+  background-size: 200% auto;
+  animation: pd-shimmer 4s linear infinite;
+}
+
+.pg-logo {
+  font-family: $font-display;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, $gold, $bright-gold, $antique-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+
+.pg-sub {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 13px;
+  color: rgba($ivory, .35);
+  margin-bottom: 20px;
+}
+
+.pg-ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $gold;
+  opacity: .3;
+  margin-bottom: 24px;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, $gold);
+  }
+  &::after { background: linear-gradient(90deg, $gold, transparent); }
+
+  span { font-size: 12px; }
+}
+
+.pg-input {
+  width: 100%;
+  padding: 13px 16px;
+  margin-bottom: 8px;
+  background: rgba($ivory, .04);
+  border: 1px solid rgba($gold, .2);
+  border-radius: 2px;
+  color: $ivory;
+  font-family: $font-display;
+  font-size: 20px;
+  letter-spacing: 8px;
+  text-align: center;
+  outline: none;
+  transition: all .25s;
+
+  &::placeholder { letter-spacing: 2px; font-size: 13px; color: rgba($ivory, .2); }
+  &:focus { border-color: $saffron; background: rgba($saffron, .05); }
+}
+
+.pg-error {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 12px;
+  color: $crimson;
+  margin-bottom: 8px;
+}
+
+.pg-btn {
+  width: 100%;
+  padding: 13px;
+  margin-top: 4px;
+  background: linear-gradient(135deg, $saffron, $deep-saffron);
+  border: none;
+  border-radius: 2px;
+  color: $wine;
+  font-family: $font-display;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .25s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba($saffron, .35); }
+  &:active { transform: translateY(0); }
+}
+
+.pg-back {
+  display: block;
+  margin-top: 20px;
+  font-family: $font-body;
+  font-size: 12px;
+  color: rgba($gold, .35);
+  text-decoration: none;
+  transition: color .2s;
+
+  &:hover { color: $gold; }
+}

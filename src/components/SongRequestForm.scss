@@ -1,0 +1,394 @@
+@use '../styles/variables' as *;
+
+@keyframes sr-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sr-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes sr-glow {
+  0%, 100% { box-shadow: 0 0 24px rgba($maroon, .2), 0 8px 40px rgba($maroon, .14); }
+  50%       { box-shadow: 0 0 40px rgba($gold, .22), 0 8px 40px rgba($maroon, .18); }
+}
+
+@keyframes sr-dot-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.6); opacity: .5; }
+}
+
+@keyframes sr-breathe {
+  0%, 100% { opacity: .75; }
+  50%       { opacity: 1; }
+}
+
+// ── Page ────────────────────────────────────
+.sr-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px 80px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba($saffron, .22) 0%, transparent 65%),
+    #C4956A;
+  animation: sr-fade-up .45s ease both;
+}
+
+// ── Card ────────────────────────────────────
+.sr-card {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #FFFDF5;
+  border: 1px solid rgba($gold, .5);
+  box-shadow: 0 12px 56px rgba($maroon, .3);
+  animation: sr-glow 5s ease-in-out infinite;
+}
+
+// ── Top shimmer bar ──────────────────────────
+.sr-topbar {
+  height: 4px;
+  background: linear-gradient(90deg, $ruby, $saffron, $gold, $saffron, $ruby);
+  background-size: 200% auto;
+  animation: sr-shimmer 4s linear infinite;
+}
+
+// ── Header ──────────────────────────────────
+.sr-header {
+  padding: 34px 32px 24px;
+  text-align: center;
+  border-bottom: 1px solid rgba($maroon, .12);
+}
+
+.sr-title {
+  font-family: $font-display;
+  font-size: 28px;
+  color: $ruby;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.sr-sub {
+  font-family: $font-body;
+  font-size: 18px;
+  color: rgba($maroon, .65);
+  font-style: italic;
+  margin: 0;
+}
+
+// ── Step dots ───────────────────────────────
+.sr-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.sr-step-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sr-step-line {
+  display: block;
+  width: 28px;
+  height: 1.5px;
+  background: rgba($maroon, .2);
+}
+
+.dot {
+  display: block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba($maroon, .18);
+  border: 1.5px solid rgba($maroon, .28);
+  transition: all .4s ease;
+
+  &.done   { background: $saffron; border-color: $saffron; }
+  &.active { background: $ruby; border-color: $ruby; transform: scale(1.5); animation: sr-dot-pulse 1.5s ease infinite; }
+}
+
+// ── Body ────────────────────────────────────
+.sr-body { padding: 28px 30px 36px; }
+
+.sr-step { animation: sr-fade-up .3s ease both; }
+
+// ── Label ───────────────────────────────────
+.sr-label {
+  display: block;
+  font-family: $font-display;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: $maroon;
+  margin-bottom: 10px;
+}
+
+.sr-optional {
+  font-family: $font-body;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba($maroon, .5);
+}
+
+// ── Input ──────────────────────────────────
+.sr-input {
+  width: 100%;
+  padding: 16px 18px;
+  background: #FFFFFF;
+  border: 2px solid rgba($maroon, .25);
+  border-radius: 3px;
+  color: $maroon;
+  font-family: $font-body;
+  font-size: 20px;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+
+  &::placeholder { color: rgba($maroon, .38); font-style: italic; }
+
+  &:focus {
+    border-color: $saffron;
+    background: rgba($saffron, .04);
+    box-shadow: 0 0 0 3px rgba($saffron, .12);
+  }
+}
+
+// ── Chips ──────────────────────────────────
+.sr-chips {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sr-chip {
+  text-align: center;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: $font-body;
+  font-size: 17px;
+  transition: all .2s;
+  padding: 13px 10px;
+  background: #FFFFFF;
+  border: 2px solid rgba($maroon, .18);
+  color: rgba($maroon, .75);
+
+  &:hover { border-color: $saffron; color: $maroon; background: rgba($saffron, .08); }
+  &--sel  { border-color: $saffron; color: $ruby; background: rgba($saffron, .1); font-weight: 600; }
+}
+
+// ── Textarea ────────────────────────────────
+.sr-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 14px 16px;
+  border-radius: 3px;
+  font-family: $font-body;
+  font-size: 18px;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s;
+  background: #FFFFFF;
+  border: 2px solid rgba($maroon, .22);
+  color: $maroon;
+
+  &::placeholder { color: rgba($maroon, .38); font-style: italic; }
+  &:focus { border-color: $saffron; box-shadow: 0 0 0 3px rgba($saffron, .1); }
+}
+
+.sr-charcount {
+  text-align: right;
+  font-family: $font-display;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: rgba($maroon, .5);
+  margin-top: 5px;
+}
+
+// ── Buttons ─────────────────────────────────
+.sr-btn-row { display: flex; flex-direction: column; gap: 0; margin-top: 22px; }
+
+.sr-btn {
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  border-radius: 3px;
+  font-family: $font-display;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .25s;
+
+  &--primary {
+    background: linear-gradient(135deg, $saffron, $deep-saffron);
+    color: #FFFDF5;
+    box-shadow: 0 4px 18px rgba($saffron, .35);
+
+    &:hover  { transform: translateY(-2px); box-shadow: 0 8px 26px rgba($saffron, .45); }
+    &:active { transform: translateY(0); }
+    &:disabled { opacity: .65; cursor: not-allowed; transform: none; box-shadow: none; }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: rgba($maroon, .65);
+    border: 2px solid rgba($maroon, .22);
+    margin-top: 10px;
+
+    &:hover { color: $maroon; border-color: rgba($maroon, .45); background: rgba($maroon, .04); }
+  }
+
+  &--queue {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    border: 2px solid rgba($maroon, .28);
+    border-radius: 3px;
+    background: transparent;
+    color: rgba($maroon, .75);
+    font-family: $font-display;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .25s;
+
+    &:hover { border-color: $ruby; color: $ruby; background: rgba($ruby, .04); }
+  }
+}
+
+// ── Success ─────────────────────────────────
+.sr-success { text-align: center; }
+
+.sr-success-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  animation: sr-breathe 2.5s ease infinite;
+}
+
+.sr-success-title {
+  font-family: $font-display;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: $ruby;
+  margin: 0 0 22px;
+}
+
+.sr-success-card {
+  background: #FFFFFF;
+  border: 2px solid rgba($maroon, .15);
+  border-radius: 3px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.sr-success-song {
+  font-family: $font-body;
+  font-size: 22px;
+  font-weight: 700;
+  color: $maroon;
+  margin-bottom: 5px;
+}
+
+.sr-success-artist {
+  font-family: $font-body;
+  font-size: 17px;
+  font-style: italic;
+  color: rgba($maroon, .65);
+}
+
+.sr-success-ded {
+  font-family: $font-body;
+  font-size: 16px;
+  font-style: italic;
+  color: $ruby;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba($maroon, .1);
+}
+
+// ── Pills ───────────────────────────────────
+.sr-pills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.sr-pill {
+  background: rgba($saffron, .1);
+  border: 2px solid rgba($saffron, .35);
+  border-radius: 3px;
+  padding: 18px 8px;
+  text-align: center;
+}
+
+.sr-pill-num {
+  font-family: $font-display;
+  font-size: 32px;
+  font-weight: 700;
+  color: $ruby;
+}
+
+.sr-pill-label {
+  font-family: $font-display;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba($maroon, .65);
+  margin-top: 5px;
+}
+
+.sr-enjoy {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba($maroon, .6);
+  margin-top: 16px;
+}
+
+// ── Error ───────────────────────────────────
+.sr-error {
+  font-family: $font-body;
+  font-size: 16px;
+  font-style: italic;
+  color: $crimson;
+  text-align: center;
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba($crimson, .06);
+  border: 1.5px solid rgba($crimson, .25);
+  border-radius: 3px;
+}
+
+// ── Responsive ──────────────────────────────
+@media (max-width: 480px) {
+  .sr-page   { padding: 24px 14px 60px; }
+  .sr-header { padding: 26px 22px 18px; }
+  .sr-title  { font-size: 22px; letter-spacing: 3px; }
+  .sr-body   { padding: 22px 20px 28px; }
+  .sr-input  { font-size: 18px; }
+}
