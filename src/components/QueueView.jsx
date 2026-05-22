@@ -22,7 +22,7 @@ const removeMyRequestId = (id) => {
 export default function QueueView() {
   const [requests,   setRequests]   = useState([]);
   const [loading,    setLoading]    = useState(true);
-  const [cancelling, setCancelling] = useState(null); // stores id being cancelled
+  const [cancelling, setCancelling] = useState(null);
   const sessionKey = localStorage.getItem('aikyam_session');
 
   useEffect(() => {
@@ -50,7 +50,6 @@ export default function QueueView() {
 
   const playing = requests.find(r => r.status === 'playing');
 
-  // All of the user's requests today
   const myIds      = getMyRequestIds();
   const myRequests = requests.filter(r =>
     myIds.includes(r.id) &&
@@ -89,7 +88,7 @@ export default function QueueView() {
           <p className="qv-sub">AIKYAM · Tonight's Requests</p>
         </div>
 
-        {/* ── My Request Banners (one per request) ── */}
+        {/* ── My Request Banners ── */}
         {myRequests.map(myRequest => {
           const myStatus   = getStatus(myRequest);
           const myPosition = pending.findIndex(r => r.id === myRequest.id) + 1;
@@ -195,7 +194,18 @@ export default function QueueView() {
                     )}
                     <div className="qv-row-meta">{fmtAgo(r.timestamp)}</div>
                   </div>
-                  {myIds.includes(r.id) && <div className="qv-mine-badge">Yours!</div>}
+                  {myIds.includes(r.id) && (
+                    <div className="qv-mine-actions">
+                      <div className="qv-mine-badge">Yours!</div>
+                      <button
+                        className="qv-cancel-btn"
+                        onClick={() => handleCancel(r.id)}
+                        disabled={cancelling === r.id}
+                      >
+                        {cancelling === r.id ? '…' : '✕'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

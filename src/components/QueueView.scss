@@ -353,6 +353,14 @@
   &:disabled { opacity: .4; cursor: not-allowed; }
 }
 
+.qv-mine-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 // ── Responsive ──────────────────────────────
 @media (max-width: 480px) {
   .qv-page   { padding: 24px 14px 60px; }

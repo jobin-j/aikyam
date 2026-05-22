@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import './SongSuggester.scss';
 import { callClaude, CLAUDE_MODEL_SMART } from '../services/claudeApi';
-
 import AikyamSpinner from './AikyamSpinner';
 
 const MOOD_CHIPS = [
-  { label: 'Pyaar Wala 💕',   value: 'romantic and love' },
-  { label: 'Toota Dil 💔',    value: 'sad and emotional' },
-  { label: 'Nachle! 🎉',      value: 'party and celebration' },
-  { label: 'Purana Gold 🎸',  value: 'classic 90s and old Bollywood hits' },
+  { label: 'Pyaar Wala 💕',  value: 'romantic and love' },
+  { label: 'Toota Dil 💔',   value: 'sad and emotional' },
+  { label: 'Nachle! 🎉',     value: 'party and celebration' },
+  { label: 'Purana Gold 🎸', value: 'classic 90s and old Bollywood hits' },
 ];
 
 const SYSTEM_PROMPT = `You are a Bollywood music expert helping an audience member at a live acoustic fusion gig by AIKYAM in Bangalore. AIKYAM is a duo — Kamal Kishor Vyas on vocals and acoustic guitar, Jobin John on percussion.
@@ -50,8 +49,8 @@ export default function SongSuggester({ onSongSelect, onBack }) {
       const text = await callClaude({
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: `Suggest 3 Bollywood songs for this vibe: "${activeMood}"` }],
-        model: CLAUDE_MODEL_SMART,
         maxTokens: 1000,
+        model: CLAUDE_MODEL_SMART,
       });
       const clean = text.replace(/```json|```/g, '').trim();
       const parsed = JSON.parse(clean);
@@ -77,78 +76,79 @@ export default function SongSuggester({ onSongSelect, onBack }) {
     setError('');
   };
 
-  if (loading) return <AikyamSpinner color="#FF9933" />; 
-  
   return (
-    <div className="ss-page">
-      <div className="ss-card">
-        <div className="ss-shimmer" />
+    <>
+      {loading && <AikyamSpinner color="#FF9933" />}
+      <div className="ss-page">
+        <div className="ss-card">
+          <div className="ss-shimmer" />
 
-        <div className="ss-header">
-          <button className="ss-back" onClick={onBack}>← Back</button>
-          <p className="ss-eyebrow">AI Recommender</p>
-          <h2 className="ss-title">What's the vibe tonight?</h2>
-          <p className="ss-sub">Pick a mood or describe the moment</p>
-        </div>
+          <div className="ss-header">
+            <button className="ss-back" onClick={onBack}>← Back</button>
+            <p className="ss-eyebrow">AI Recommender</p>
+            <h2 className="ss-title">What's the vibe tonight?</h2>
+            <p className="ss-sub">Pick a mood or describe the moment</p>
+          </div>
 
-        <div className="ss-ornament"><span>✦</span></div>
+          <div className="ss-ornament"><span>✦</span></div>
 
-        <div className="ss-chips">
-          {MOOD_CHIPS.map(chip => (
-            <button
-              key={chip.value}
-              className={`ss-chip ${selectedMood === chip.value ? 'ss-chip--active' : ''}`}
-              onClick={() => handleChipClick(chip.value)}
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="ss-field">
-          <label className="ss-label">Or describe it your way</label>
-          <textarea
-            className="ss-textarea"
-            placeholder="e.g. Something for my wife's birthday, she loves old romantic songs…"
-            value={customMood}
-            onChange={handleCustomChange}
-            rows={3}
-            maxLength={200}
-          />
-        </div>
-
-        <button
-          className="ss-btn-primary"
-          onClick={getSuggestions}
-          disabled={!activeMood || loading}
-        >
-          {loading ? 'Finding songs…' : '✨ Suggest Songs'}
-        </button>
-
-        {error && <p className="ss-error">{error}</p>}
-
-        {suggestions.length > 0 && (
-          <div className="ss-results">
-            <div className="ss-ornament ss-ornament--results"><span>✦</span></div>
-            <p className="ss-results-label">Pick one to request</p>
-            {suggestions.map((s, i) => (
-              <div key={i} className="ss-suggestion">
-                <div className="ss-suggestion-info">
-                  <p className="ss-song-name">🎵 {s.song}</p>
-                  <p className="ss-song-meta">{s.movie} · {s.year}</p>
-                  <p className="ss-song-why">{s.why}</p>
-                </div>
-                <button
-                  className="ss-btn-pick"
-                  onClick={() => onSongSelect({ songName: s.song, movie: s.movie })}
-                >
-                  Pick
-                </button>
-              </div>
+          <div className="ss-chips">
+            {MOOD_CHIPS.map(chip => (
+              <button
+                key={chip.value}
+                className={`ss-chip ${selectedMood === chip.value ? 'ss-chip--active' : ''}`}
+                onClick={() => handleChipClick(chip.value)}
+              >
+                {chip.label}
+              </button>
             ))}
           </div>
-        )}
+
+          <div className="ss-field">
+            <label className="ss-label">Or describe it your way</label>
+            <textarea
+              className="ss-textarea"
+              placeholder="e.g. Something for my wife's birthday, she loves old romantic songs…"
+              value={customMood}
+              onChange={handleCustomChange}
+              rows={3}
+              maxLength={200}
+            />
+          </div>
+
+          <button
+            className="ss-btn-primary"
+            onClick={getSuggestions}
+            disabled={!activeMood || loading}
+          >
+            {loading ? 'Finding songs…' : '✨ Suggest Songs'}
+          </button>
+
+          {error && <p className="ss-error">{error}</p>}
+
+          {suggestions.length > 0 && (
+            <div className="ss-results">
+              <div className="ss-ornament ss-ornament--results"><span>✦</span></div>
+              <p className="ss-results-label">Pick one to request</p>
+              {suggestions.map((s, i) => (
+                <div key={i} className="ss-suggestion">
+                  <div className="ss-suggestion-info">
+                    <p className="ss-song-name">🎵 {s.song}</p>
+                    <p className="ss-song-meta">{s.movie} · {s.year}</p>
+                    <p className="ss-song-why">{s.why}</p>
+                  </div>
+                  <button
+                    className="ss-btn-pick"
+                    onClick={() => onSongSelect({ songName: s.song, movie: s.movie })}
+                  >
+                    Pick
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
