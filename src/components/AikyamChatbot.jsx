@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './AikyamChatbot.scss';
+import { callClaude } from '../services/claudeApi';
 
 const SHEET_BASE_PUB = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTbZJKItcKbJ6XOev-EyCgbhj2UnpYjnopDk26ZX7ZI59HD34m-hcYoSjdLdu45HPwwK80VJPEhSHGM/pub';
 
@@ -7,8 +8,6 @@ const SHEET_URLS = {
   Band_Info: `${SHEET_BASE_PUB}?gid=0&single=true&output=csv`,
   Index:     `${SHEET_BASE_PUB}?gid=109174446&single=true&output=csv`,
 };
-
-const CLAUDE_MODEL = 'claude-haiku-4-5-20251001';
 
 const OPENING_MESSAGE =
   "Namaste! 🎵 I am AIKYAM's virtual assistant. Ask me about our upcoming gigs, band members, or anything about our music!";
@@ -23,77 +22,35 @@ async function fetchUrl(url) {
 }
 
 function parseIndex(indexCsv) {
-  const lines = indexCsv
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter(Boolean);
-  // Skip header row
-  return lines.slice(1).map((line) => {
+  const lines = indexCsv.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  return lines.slice(1).map(line => {
     const cols = line.split(',');
     const name = (cols[0] || '').replace(/"/g, '').trim();
     const gid  = (cols[1] || '').replace(/"/g, '').trim();
     return { name, gid };
-  }).filter((r) => r.name && r.gid);
+  }).filter(r => r.name && r.gid);
 }
-
-// function getMonthTabsFromIndex(indexCsv) {
-//   const lines = indexCsv
-//     .split(/\r?\n/)
-//     .map((l) => l.trim())
-//     .filter(Boolean);
-//   if (lines.length === 0) return [];
-//   return lines
-//     .slice(1)
-//     .map((line) => {
-//       const quoted = line.match(/^"([^"]*)"/);
-//       if (quoted) return quoted[1].trim();
-//       return (line.split(',')[0] || '').trim();
-//     })
-//     .filter(Boolean);
-// }
 
 async function loadAikyamContext() {
   let bandInfoCsv = '';
   let tabs = [];
 
-  console.log('Fetching Band_Info...');
-  try {
-    bandInfoCsv = await fetchUrl(SHEET_URLS.Band_Info);
-    console.log('Band_Info fetched successfully');
-  } catch (err) {
-    console.error('Band_Info failed:', err);
-  }
-
-  console.log('Fetching Index...');
-  try {
-    const indexCsv = await fetchUrl(SHEET_URLS.Index);
-    tabs = parseIndex(indexCsv);
-    console.log('Index tabs found:', tabs);
-  } catch (err) {
-    console.error('Index failed:', err);
-  }
+  try { bandInfoCsv = await fetchUrl(SHEET_URLS.Band_Info); } catch (err) { console.error('Band_Info failed:', err); }
+  try { tabs = parseIndex(await fetchUrl(SHEET_URLS.Index)); } catch (err) { console.error('Index failed:', err); }
 
   const monthResults = [];
   for (const tab of tabs) {
     const url = `${SHEET_BASE_PUB}?gid=${tab.gid}&single=true&output=csv`;
-    console.log(`Fetching ${tab.name}...`);
     try {
       const csv = await fetchUrl(url);
       monthResults.push(`## ${tab.name}\n${csv.trim()}`);
-      console.log(`${tab.name} fetched successfully`);
     } catch (err) {
-      console.error(`${tab.name} failed:`, err);
       monthResults.push(`## ${tab.name}\n(schedule unavailable)`);
     }
   }
 
-  console.log('All data loaded, opening chat');
-
   const today = new Date().toLocaleDateString('en-IN', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
   return [
@@ -108,64 +65,15 @@ async function loadAikyamContext() {
   ].join('\n');
 }
 
-async function callClaude(systemPrompt, messages) {
-  const res = await fetch('/.netlify/functions/claude', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 1024,
-      system: [
-        {
-          type: 'text',
-          text: systemPrompt,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages,
-    }),
-  });
-
-  if (!res.ok) {
-    if (res.status === 529) {
-      throw new Error("I'm a little overwhelmed right now 🎵 Please try again in a moment!");
-    } else if (res.status === 429) {
-      throw new Error("Too many requests! 🎵 Please wait a moment and try again.");
-    } else if (res.status === 500) {
-      throw new Error("Something went wrong on our end 🎵 Please try again shortly.");
-    } else if (res.status === 503) {
-      throw new Error("Service temporarily unavailable 🎵 Please try again in a moment.");
-    } else if (res.status === 401) {
-      throw new Error("Authentication error 🎵 Please contact us on WhatsApp at +917023384619.");
-    } else if (res.status === 400) {
-      throw new Error("Something went wrong with your message 🎵 Please try rephrasing it.");
-    } else {
-      throw new Error(`Something went wrong 🎵 Please try again. (${res.status})`);
-    }
-  }
-
-  const data = await res.json();
-  const textBlock = (data.content || []).find((b) => b.type === 'text');
-  return textBlock ? textBlock.text : '';
-}
-
 const MusicNoteIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      fill="currentColor"
-      d="M20 3.5c0-.46-.41-.82-.86-.75l-9 1.5A.75.75 0 0 0 9.5 5v9.55a4 4 0 1 0 1.5 3.11V8.13l8-1.33v6.3a4 4 0 1 0 1.5 3.11V3.5Z"
-    />
+    <path fill="currentColor" d="M20 3.5c0-.46-.41-.82-.86-.75l-9 1.5A.75.75 0 0 0 9.5 5v9.55a4 4 0 1 0 1.5 3.11V8.13l8-1.33v6.3a4 4 0 1 0 1.5 3.11V3.5Z" />
   </svg>
 );
 
 const CloseIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      fill="currentColor"
-      d="M18.3 5.71 12 12.01l-6.3-6.3-1.41 1.41 6.3 6.3-6.3 6.3 1.41 1.41 6.3-6.3 6.3 6.3 1.41-1.41-6.3-6.3 6.3-6.3z"
-    />
+    <path fill="currentColor" d="M18.3 5.71 12 12.01l-6.3-6.3-1.41 1.41 6.3 6.3-6.3 6.3 1.41 1.41 6.3-6.3 6.3 6.3 1.41-1.41-6.3-6.3 6.3-6.3z" />
   </svg>
 );
 
@@ -177,35 +85,28 @@ const SendIcon = () => (
 
 const TypingDots = () => (
   <span className="aikyam-chatbot__typing" aria-label="Assistant is typing">
-    <span />
-    <span />
-    <span />
+    <span /><span /><span />
   </span>
 );
 
 const Spinner = () => (
-  <span
-    className="aikyam-chatbot__spinner"
-    role="status"
-    aria-label="Loading"
-  />
+  <span className="aikyam-chatbot__spinner" role="status" aria-label="Loading" />
 );
 
 const AikyamChatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [isOpen,          setIsOpen]          = useState(false);
+  const [messages,        setMessages]        = useState([]);
+  const [input,           setInput]           = useState('');
   const [isLoadingSheets, setIsLoadingSheets] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [error, setError] = useState(null);
-  const [systemPrompt, setSystemPrompt] = useState(null);
+  const [isTyping,        setIsTyping]        = useState(false);
+  const [error,           setError]           = useState(null);
+  const [systemPrompt,    setSystemPrompt]    = useState(null);
 
   const messagesEndRef = useRef(null);
-  const inputRef = useRef(null);
+  const inputRef       = useRef(null);
 
   useEffect(() => {
-    if (!isOpen) return;
-    if (messages.length > 0) return;
+    if (!isOpen || messages.length > 0) return;
     setMessages([{ role: 'assistant', content: OPENING_MESSAGE }]);
   }, [isOpen, messages.length]);
 
@@ -215,29 +116,17 @@ const AikyamChatbot = () => {
     setIsLoadingSheets(true);
     setError(null);
     loadAikyamContext()
-      .then((prompt) => {
-        if (cancelled) return;
-        setSystemPrompt(prompt);
-      })
-      .finally(() => {
-        if (cancelled) return;
-        setIsLoadingSheets(false);
-      });
-    return () => {
-      cancelled = true;
-    };
+      .then(prompt => { if (!cancelled) setSystemPrompt(prompt); })
+      .finally(() => { if (!cancelled) setIsLoadingSheets(false); });
+    return () => { cancelled = true; };
   }, [isOpen, systemPrompt]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping, isLoadingSheets]);
 
   useEffect(() => {
-    if (isOpen && inputRef.current && !isLoadingSheets) {
-      inputRef.current.focus();
-    }
+    if (isOpen && inputRef.current && !isLoadingSheets) inputRef.current.focus();
   }, [isOpen, isLoadingSheets]);
 
   const sendMessage = useCallback(async () => {
@@ -246,26 +135,23 @@ const AikyamChatbot = () => {
 
     const userMessage = { role: 'user', content: text };
     const apiMessages = [...messages, userMessage]
-    .filter((m) => m.role === 'user' || m.role === 'assistant')
-    .map(({ role, content }) => ({ role, content }))
-    .reduce((acc, msg) => {
-      if (acc.length === 0) return [msg];
-      const last = acc[acc.length - 1];
-      if (last.role === msg.role) return acc;
-      return [...acc, msg];
-    }, []);
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(({ role, content }) => ({ role, content }))
+      .reduce((acc, msg) => {
+        if (acc.length === 0) return [msg];
+        if (acc[acc.length - 1].role === msg.role) return acc;
+        return [...acc, msg];
+      }, [])
+      .filter((_, i, arr) => !(i === 0 && arr[0].role === 'assistant')); // strip leading assistant message
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsTyping(true);
     setError(null);
 
     try {
-      const reply = await callClaude(systemPrompt, apiMessages);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: reply || '...' },
-      ]);
+      const reply = await callClaude({ system: systemPrompt, messages: apiMessages });
+      setMessages(prev => [...prev, { role: 'assistant', content: reply || '...' }]);
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
@@ -273,19 +159,12 @@ const AikyamChatbot = () => {
     }
   }, [input, isTyping, isLoadingSheets, systemPrompt, messages]);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  const handleKeyDown = e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
   return (
-    <div
-      className={`aikyam-chatbot ${
-        isOpen ? 'aikyam-chatbot--open' : 'aikyam-chatbot--closed'
-      }`}
-    >
+    <div className={`aikyam-chatbot ${isOpen ? 'aikyam-chatbot--open' : 'aikyam-chatbot--closed'}`}>
       {isOpen && (
         <div className="aikyam-chatbot__panel" role="dialog" aria-label="Aikyam assistant">
           <header className="aikyam-chatbot__header">
@@ -293,12 +172,7 @@ const AikyamChatbot = () => {
               <p className="aikyam-chatbot__eyebrow">AIKYAM</p>
               <h3 className="aikyam-chatbot__title">Virtual Assistant</h3>
             </div>
-            <button
-              type="button"
-              className="aikyam-chatbot__close"
-              onClick={() => setIsOpen(false)}
-              aria-label="Close chat"
-            >
+            <button type="button" className="aikyam-chatbot__close" onClick={() => setIsOpen(false)} aria-label="Close chat">
               <CloseIcon />
             </button>
           </header>
@@ -310,56 +184,35 @@ const AikyamChatbot = () => {
                 <span>Tuning in to the schedule…</span>
               </div>
             )}
-
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`aikyam-chatbot__message aikyam-chatbot__message--${msg.role}`}
-              >
+              <div key={i} className={`aikyam-chatbot__message aikyam-chatbot__message--${msg.role}`}>
                 {msg.content}
               </div>
             ))}
-
             {isTyping && (
               <div className="aikyam-chatbot__message aikyam-chatbot__message--assistant aikyam-chatbot__message--typing">
                 <TypingDots />
               </div>
             )}
-
-            {error && (
-              <div className="aikyam-chatbot__error" role="alert">
-                {error}
-              </div>
-            )}
-
+            {error && <div className="aikyam-chatbot__error" role="alert">{error}</div>}
             <div ref={messagesEndRef} />
           </div>
 
-          <form
-            className="aikyam-chatbot__input-row"
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}
-          >
+          <form className="aikyam-chatbot__input-row" onSubmit={e => { e.preventDefault(); sendMessage(); }}>
             <input
               ref={inputRef}
               type="text"
               className="aikyam-chatbot__input"
-              placeholder={
-                isLoadingSheets ? 'Loading…' : 'Ask about gigs, the band…'
-              }
+              placeholder={isLoadingSheets ? 'Loading…' : 'Ask about gigs, the band…'}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               disabled={isLoadingSheets || isTyping}
             />
             <button
               type="submit"
               className="aikyam-chatbot__send"
-              disabled={
-                !input.trim() || isLoadingSheets || isTyping || !systemPrompt
-              }
+              disabled={!input.trim() || isLoadingSheets || isTyping || !systemPrompt}
               aria-label="Send message"
             >
               <SendIcon />
@@ -371,7 +224,7 @@ const AikyamChatbot = () => {
       <button
         type="button"
         className="aikyam-chatbot__toggle"
-        onClick={() => setIsOpen((v) => !v)}
+        onClick={() => setIsOpen(v => !v)}
         aria-label={isOpen ? 'Close chat' : 'Chat with Aikyam'}
         aria-expanded={isOpen}
       >

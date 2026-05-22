@@ -1,0 +1,338 @@
+@use '../styles/variables' as *;
+
+// ─── Animations ───────────────────────────────────────────
+@keyframes ss-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ss-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes ss-breathe {
+  0%, 100% { opacity: .7; }
+  50%       { opacity: 1; }
+}
+
+@keyframes ss-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Page ─────────────────────────────────────────────────
+.ss-page {
+  min-height: 100vh;
+  background: #E8D5B0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem 4rem;
+}
+
+// ─── Card ─────────────────────────────────────────────────
+.ss-card {
+  background: #FFFDF5;
+  border-radius: 3px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 48px rgba($maroon, .35);
+  overflow: hidden;
+  animation: ss-fade-up .4s ease both;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ─── Shimmer bar ──────────────────────────────────────────
+.ss-shimmer {
+  height: 3px;
+  background: linear-gradient(90deg, $ruby, $saffron, $gold, $saffron, $ruby);
+  background-size: 200% auto;
+  animation: ss-shimmer 4s linear infinite;
+}
+
+// ─── Header ───────────────────────────────────────────────
+.ss-header {
+  padding: 1.5rem 1.75rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ss-back {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  font-family: $font-display;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: $maroon;
+  opacity: .5;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 6px;
+
+  &:hover { opacity: .8; }
+}
+
+.ss-eyebrow {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: $saffron;
+  margin: 0;
+}
+
+.ss-title {
+  font-family: $font-display;
+  font-size: 22px;
+  font-weight: 700;
+  color: $ruby;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.ss-sub {
+  font-family: $font-body;
+  font-size: 14px;
+  font-style: italic;
+  color: $maroon;
+  opacity: .6;
+  margin: 0;
+}
+
+// ─── Ornament ─────────────────────────────────────────────
+.ss-ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: $gold;
+  opacity: .35;
+  margin: 1rem 1.75rem;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, $gold);
+  }
+  &::after { background: linear-gradient(90deg, $gold, transparent); }
+
+  span { font-size: 11px; flex-shrink: 0; }
+
+  &--results {
+    margin-top: 1.5rem;
+  }
+}
+
+// ─── Mood Chips ───────────────────────────────────────────
+.ss-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 1.75rem;
+}
+
+.ss-chip {
+  font-family: $font-body;
+  font-size: 13px;
+  background: transparent;
+  border: 1.5px solid rgba($maroon, .2);
+  border-radius: 2px;
+  color: $maroon;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all .2s ease;
+
+  &:hover {
+    border-color: $saffron;
+    color: $ruby;
+  }
+
+  &--active {
+    background: linear-gradient(135deg, $saffron, $deep-saffron);
+    border-color: transparent;
+    color: $wine;
+    font-weight: 600;
+  }
+}
+
+// ─── Custom Textarea ──────────────────────────────────────
+.ss-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 1rem 1.75rem 0;
+}
+
+.ss-label {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: $maroon;
+  opacity: .55;
+}
+
+.ss-textarea {
+  background: #FFFFFF;
+  border: 1.5px solid rgba($maroon, .3);
+  border-radius: 2px;
+  color: $maroon;
+  font-family: $font-body;
+  font-size: 15px;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  transition: border-color .2s;
+
+  &::placeholder { opacity: .4; font-style: italic; }
+
+  &:focus {
+    border-color: $saffron;
+    box-shadow: 0 0 0 3px rgba($saffron, .1);
+  }
+}
+
+// ─── Primary Button ───────────────────────────────────────
+.ss-btn-primary {
+  margin: 1.25rem 1.75rem 0;
+  background: linear-gradient(135deg, $saffron, $deep-saffron);
+  color: $wine;
+  font-family: $font-display;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 2px;
+  padding: 14px;
+  cursor: pointer;
+  transition: opacity .2s;
+
+  &:hover:not(:disabled) { opacity: .88; }
+  &:disabled { opacity: .4; cursor: not-allowed; }
+}
+
+// ─── Error ────────────────────────────────────────────────
+.ss-error {
+  font-family: $font-body;
+  font-size: 13px;
+  color: $crimson;
+  text-align: center;
+  padding: 0 1.75rem;
+  margin: .5rem 0 0;
+  font-style: italic;
+}
+
+// ─── Results ──────────────────────────────────────────────
+.ss-results {
+  padding: 0 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ss-results-label {
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: $maroon;
+  opacity: .45;
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.ss-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba($maroon, .1);
+  animation: ss-slide-in .35s ease both;
+
+  &:last-child { border-bottom: none; }
+
+  @for $i from 1 through 3 {
+    &:nth-child(#{$i}) { animation-delay: #{($i - 1) * 0.08}s; }
+  }
+}
+
+.ss-suggestion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.ss-song-name {
+  font-family: $font-body;
+  font-size: 17px;
+  font-weight: 600;
+  color: $ruby;
+  margin: 0;
+}
+
+.ss-song-meta {
+  font-family: $font-body;
+  font-size: 13px;
+  font-style: italic;
+  color: $maroon;
+  opacity: .55;
+  margin: 0;
+}
+
+.ss-song-why {
+  font-family: $font-body;
+  font-size: 13px;
+  color: $maroon;
+  opacity: .7;
+  margin: 2px 0 0;
+}
+
+// ─── Pick Button ──────────────────────────────────────────
+.ss-btn-pick {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1.5px solid rgba($saffron, .5);
+  border-radius: 2px;
+  color: $ruby;
+  font-family: $font-display;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: all .2s;
+
+  &:hover {
+    background: linear-gradient(135deg, $saffron, $deep-saffron);
+    border-color: transparent;
+    color: $wine;
+  }
+}
+
+.ss-card {
+  padding-bottom: 2rem; // ← add this
+}
+
+// ─── Mobile ───────────────────────────────────────────────
+@media (max-width: 480px) {
+  .ss-page { padding: 1rem .75rem 4rem; }
+  .ss-title { font-size: 18px; }
+  .ss-chips { gap: 6px; }
+  .ss-chip { font-size: 12px; padding: 5px 10px; }
+  .ss-suggestion { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .ss-btn-pick { width: 100%; text-align: center; }
+}

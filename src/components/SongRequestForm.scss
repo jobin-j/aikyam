@@ -384,6 +384,49 @@
   border-radius: 3px;
 }
 
+.sr-ai-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: .5rem 0;
+  opacity: .4;
+
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba($maroon, .3);
+  }
+
+  span {
+    font-family: $font-body;
+    font-size: 13px;
+    font-style: italic;
+    color: $maroon;
+  }
+}
+
+.sr-btn-ai {
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid rgba($saffron, .45);
+  border-radius: 2px;
+  color: $ruby;
+  font-family: $font-display;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 13px;
+  cursor: pointer;
+  transition: all .2s;
+
+  &:hover {
+    background: rgba($saffron, .08);
+    border-color: $saffron;
+  }
+}
+
 // ── Responsive ──────────────────────────────
 @media (max-width: 480px) {
   .sr-page   { padding: 24px 14px 60px; }

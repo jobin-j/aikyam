@@ -1,9 +1,11 @@
 import { useState, useRef } from 'react';
 import './SongRequestForm.scss';
-import { addRequest } from '../services/googleSheets';
+import { addRequest, getRequests } from '../services/googleSheets';
 import AikyamSpinner from './AikyamSpinner';
+import SongSuggester from './SongSuggester';
 
 const CHIPS = ['Birthday 🎂', 'Anniversary 💑', 'Special ❤️', 'Friend 👯'];
+const MAX_REQUESTS = 3;
 
 const toTitleCase = str =>
   str.replace(/\w\S*/g, word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
@@ -17,33 +19,58 @@ const getSessionKey = () => {
   return key;
 };
 
+const getMyRequestIds = () =>
+  JSON.parse(localStorage.getItem('aikyam_request_ids') || '[]');
+
+const addMyRequestId = (id) => {
+  const existing = getMyRequestIds();
+  existing.push(id);
+  localStorage.setItem('aikyam_request_ids', JSON.stringify(existing));
+};
+
 export default function SongRequestForm() {
   const [step,        setStep]        = useState(1);
   const [songName,    setSongName]    = useState('');
   const [chipSel,     setChipSel]     = useState('');
   const [ded,         setDed]         = useState('');
   const [submitting,  setSubmitting]  = useState(false);
-  const [submitError, setSubmitError] = useState(false);
-  const [queuePos, setQueuePos] = useState(null);
+  const [submitError, setSubmitError] = useState('');
+  const [queuePos,    setQueuePos]    = useState(null);
+  const [showSuggester, setShowSuggester] = useState(false);
   const inputRef = useRef();
 
   const chipClick = c => { setChipSel(c); setDed(c); };
 
   const submit = async () => {
     setSubmitting(true);
-    setSubmitError(false);
+    setSubmitError('');
+
     try {
+      // Check pending request count before submitting
+      const allRequests = await getRequests();
+      const myIds = getMyRequestIds();
+      const myPending = allRequests.filter(r =>
+        myIds.includes(r.id) && r.status === 'pending'
+      );
+
+      if (myPending.length >= MAX_REQUESTS) {
+        setSubmitError(`You've already requested ${MAX_REQUESTS} songs. Wait for one to play first!`);
+        setSubmitting(false);
+        return;
+      }
+
       const res = await addRequest({
         song: songName,
         dedication: ded || null,
         sessionKey: getSessionKey(),
       });
-      localStorage.setItem('aikyam_request_id', res.id); // keep for banner
+
+      addMyRequestId(res.id);
       setQueuePos(res.position);
       setStep(3);
     } catch (err) {
       console.error('Failed to submit:', err);
-      setSubmitError(true);
+      setSubmitError('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -51,11 +78,25 @@ export default function SongRequestForm() {
 
   const reset = () => {
     setStep(1); setSongName('');
-    setChipSel(''); setDed(''); setSubmitError(false);
+    setChipSel(''); setDed(''); setSubmitError('');
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
   const dotClass = i => step > i ? 'dot done' : step === i ? 'dot active' : 'dot';
+
+  const handleAISongSelect = ({ songName, movie }) => {
+    setSongName(toTitleCase(`${songName} - ${movie}`));
+    setShowSuggester(false);
+  };
+
+  if (showSuggester) {
+    return (
+      <SongSuggester
+        onSongSelect={handleAISongSelect}
+        onBack={() => setShowSuggester(false)}
+      />
+    );
+  }
 
   return (
     <>
@@ -91,6 +132,13 @@ export default function SongRequestForm() {
                   onChange={e => setSongName(toTitleCase(e.target.value))}
                   onKeyDown={e => e.key === 'Enter' && songName.trim() && setStep(2)}
                 />
+                <div className="sr-ai-divider"><span>or</span></div>
+                <button
+                  className="sr-btn-ai"
+                  onClick={() => setShowSuggester(true)}
+                >
+                  ✨ Suggest me a song
+                </button>
                 <div className="sr-btn-row">
                   <button
                     className="sr-btn sr-btn--primary"
@@ -130,9 +178,7 @@ export default function SongRequestForm() {
                 <div className="sr-charcount">{ded.length} / 150</div>
 
                 {submitError && (
-                  <div className="sr-error">
-                    Something went wrong. Please try again.
-                  </div>
+                  <div className="sr-error">{submitError}</div>
                 )}
 
                 <div className="sr-btn-row">
@@ -174,11 +220,9 @@ export default function SongRequestForm() {
                       <div className="sr-pill-label">Est. Wait</div>
                     </div>
                   </div>
-
                   <a className="sr-btn sr-btn--queue" href="#/queue">
                     View Live Queue →
                   </a>
-
                   <button className="sr-btn sr-btn--primary" onClick={reset}>
                     Request Another Song
                   </button>

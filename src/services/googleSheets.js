@@ -18,9 +18,20 @@ export const addRequest = async ({ song, dedication, sessionKey }) => {
   return data;
 };
 
+// ── Delete request ────────────────────────────
+export const deleteRequest = async (id) => {
+  const res = await fetch(SCRIPT_URL, {
+    method:  'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body:    JSON.stringify({ action: 'deleteRequest', id }),
+  });
+  const data = await res.json();
+  return data;
+};
+
 // ── Update request status ─────────────────────
 export const updateStatus = async (id, status) => {
-  const res  = await fetch(SCRIPT_URL, {
+  const res = await fetch(SCRIPT_URL, {
     method:  'POST',
     headers: { 'Content-Type': 'text/plain' },
     body:    JSON.stringify({ action: 'updateStatus', id, status }),

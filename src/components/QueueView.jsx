@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getRequests } from '../services/googleSheets';
+import { getRequests, deleteRequest } from '../services/googleSheets';
 import AikyamSpinner from './AikyamSpinner';
 import './QueueView.scss';
 
@@ -11,11 +11,19 @@ const fmtAgo = d => {
   return `${Math.floor(s / 3600)}h ago`;
 };
 
+const getMyRequestIds = () =>
+  JSON.parse(localStorage.getItem('aikyam_request_ids') || '[]');
+
+const removeMyRequestId = (id) => {
+  const existing = getMyRequestIds();
+  localStorage.setItem('aikyam_request_ids', JSON.stringify(existing.filter(i => i !== id)));
+};
+
 export default function QueueView() {
-  const [requests, setRequests] = useState([]);
-  const [loading,  setLoading]  = useState(true);
+  const [requests,   setRequests]   = useState([]);
+  const [loading,    setLoading]    = useState(true);
+  const [cancelling, setCancelling] = useState(null); // stores id being cancelled
   const sessionKey = localStorage.getItem('aikyam_session');
-  const myRequestId = localStorage.getItem('aikyam_request_id'); // for banner only
 
   useEffect(() => {
     const fetchRequests = async () => {
@@ -28,7 +36,6 @@ export default function QueueView() {
         setLoading(false);
       }
     };
-
     fetchRequests();
     const poll = setInterval(fetchRequests, 3000);
     return () => clearInterval(poll);
@@ -41,22 +48,34 @@ export default function QueueView() {
     new Date(r.timestamp).toDateString() === today
   );
 
-  const playing   = requests.find(r => r.status === 'playing');
-  const myRequest = requests.find(r =>
-    r.id === myRequestId &&
+  const playing = requests.find(r => r.status === 'playing');
+
+  // All of the user's requests today
+  const myIds      = getMyRequestIds();
+  const myRequests = requests.filter(r =>
+    myIds.includes(r.id) &&
     new Date(r.timestamp).toDateString() === today
   );
 
-  const getMyStatus = () => {
-    if (!myRequest) return null;
-    if (myRequest.status === 'completed')        return 'done';
-    if (myRequest.status === 'skipped')          return 'skipped'; // ADD THIS
-    if (myRequest.status === 'playing')          return 'playing';
+  const getStatus = (r) => {
+    if (r.status === 'completed') return 'done';
+    if (r.status === 'skipped')   return 'skipped';
+    if (r.status === 'playing')   return 'playing';
     return 'pending';
   };
 
-  const myStatus   = getMyStatus();
-  const myPosition = pending.findIndex(r => r.sessionKey === sessionKey) + 1;
+  const handleCancel = async (id) => {
+    setCancelling(id);
+    try {
+      await deleteRequest(id);
+      removeMyRequestId(id);
+      setRequests(prev => prev.filter(r => r.id !== id));
+    } catch (err) {
+      console.error('Failed to cancel:', err);
+    } finally {
+      setCancelling(null);
+    }
+  };
 
   return (
     <div className="qv-page">
@@ -70,55 +89,63 @@ export default function QueueView() {
           <p className="qv-sub">AIKYAM · Tonight's Requests</p>
         </div>
 
-        {/* ── My Request Status Banner ── */}
-        {myRequest && (
-          <div className={`qv-my-banner qv-my-banner--${myStatus}`}>
-            {myStatus === 'pending' && (
-              <>
-                <div className="qv-my-icon">🎵</div>
-                <div className="qv-my-info">
-                  <div className="qv-my-label">Your Request</div>
-                  <div className="qv-my-song">{myRequest.song}</div>
-                  <div className="qv-my-pos">Position #{myPosition} in queue</div>
-                </div>
-              </>
-            )}
-            {myStatus === 'playing' && (
-              <>
-                <div className="qv-my-icon">▶</div>
-                <div className="qv-my-info">
-                  <div className="qv-my-label">Now Playing!</div>
-                  <div className="qv-my-song">{myRequest.song}</div>
-                </div>
-              </>
-            )}
-            {myStatus === 'done' && (
-              <>
-                <div className="qv-my-icon">✓</div>
-                <div className="qv-my-info">
-                  <div className="qv-my-label">Your song was played!</div>
-                  <div className="qv-my-song">{myRequest.song}</div>
-                  <a className="qv-my-again" href="#/request">Request another →</a>
-                </div>
-              </>
-            )}
-            {myStatus === 'skipped' && (
+        {/* ── My Request Banners (one per request) ── */}
+        {myRequests.map(myRequest => {
+          const myStatus   = getStatus(myRequest);
+          const myPosition = pending.findIndex(r => r.id === myRequest.id) + 1;
+
+          return (
+            <div key={myRequest.id} className={`qv-my-banner qv-my-banner--${myStatus}`}>
+              {myStatus === 'pending' && (
                 <>
-                    <div className="qv-my-icon">😔</div>
-                    <div className="qv-my-info">
+                  <div className="qv-my-icon">🎵</div>
+                  <div className="qv-my-info">
+                    <div className="qv-my-label">Your Request</div>
+                    <div className="qv-my-song">{myRequest.song}</div>
+                    <div className="qv-my-pos">Position #{myPosition} in queue</div>
+                    <button
+                      className="qv-cancel-btn"
+                      onClick={() => handleCancel(myRequest.id)}
+                      disabled={cancelling === myRequest.id}
+                    >
+                      {cancelling === myRequest.id ? 'Cancelling…' : 'Cancel Request'}
+                    </button>
+                  </div>
+                </>
+              )}
+              {myStatus === 'playing' && (
+                <>
+                  <div className="qv-my-icon">▶</div>
+                  <div className="qv-my-info">
+                    <div className="qv-my-label">Now Playing!</div>
+                    <div className="qv-my-song">{myRequest.song}</div>
+                  </div>
+                </>
+              )}
+              {myStatus === 'done' && (
+                <>
+                  <div className="qv-my-icon">✓</div>
+                  <div className="qv-my-info">
+                    <div className="qv-my-label">Your song was played!</div>
+                    <div className="qv-my-song">{myRequest.song}</div>
+                    <a className="qv-my-again" href="#/request">Request another →</a>
+                  </div>
+                </>
+              )}
+              {myStatus === 'skipped' && (
+                <>
+                  <div className="qv-my-icon">😔</div>
+                  <div className="qv-my-info">
                     <div className="qv-my-label">Sorry!</div>
                     <div className="qv-my-song">{myRequest.song}</div>
-                    <div className="qv-my-pos">
-                        We don't know this one. Try another?
-                    </div>
-                    <a className="qv-my-again" href="#/request">
-                        Request a different song →
-                    </a>
-                    </div>
+                    <div className="qv-my-pos">We don't know this one. Try another?</div>
+                    <a className="qv-my-again" href="#/request">Request a different song →</a>
+                  </div>
                 </>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          );
+        })}
 
         {/* ── Now Playing ── */}
         {playing && (
@@ -155,7 +182,7 @@ export default function QueueView() {
               {pending.map((r, i) => (
                 <div
                   key={r.id}
-                  className={`qv-row ${r.sessionKey === sessionKey ? 'qv-mine' : ''}`}
+                  className={`qv-row ${myIds.includes(r.id) ? 'qv-mine' : ''}`}
                 >
                   <div className="qv-row-pos">{i + 1}</div>
                   <div className="qv-row-info">
@@ -168,7 +195,7 @@ export default function QueueView() {
                     )}
                     <div className="qv-row-meta">{fmtAgo(r.timestamp)}</div>
                   </div>
-                  {r.sessionKey === sessionKey && <div className="qv-mine-badge">Yours!</div>}
+                  {myIds.includes(r.id) && <div className="qv-mine-badge">Yours!</div>}
                 </div>
               ))}
             </div>

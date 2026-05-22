@@ -7,7 +7,7 @@ exports.handler = async function (event, context) {
     };
   }
 
-  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+  const ANTHROPIC_API_KEY = process.env.REACT_APP_ANTHROPIC_API_KEY;
 
   if (!ANTHROPIC_API_KEY) {
     return {
