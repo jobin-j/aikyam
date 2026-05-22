@@ -91,6 +91,7 @@ export default function QueueView() {
         {/* ── My Request Banners ── */}
         {myRequests.map(myRequest => {
           const myStatus   = getStatus(myRequest);
+          if (myStatus === 'pending') return null; // ← add this line
           const myPosition = pending.findIndex(r => r.id === myRequest.id) + 1;
 
           return (
