@@ -177,7 +177,7 @@ const bulkComplete = async () => {
                         {playing.dedication && (
                             <div className="pd-now-ded">{playing.dedication}</div>
                         )}
-                        <div className="pd-now-meta">{fmtAgo(playing.ts)}</div>
+                        <div className="pd-now-meta">{fmtAgo(playing.timestamp)}</div>
                         </div>
                         <button
                         className="pd-btn-done"
@@ -234,7 +234,7 @@ const bulkComplete = async () => {
                               {r.dedication && (
                               <div className="pd-row-ded">{r.dedication}</div>
                               )}
-                              <div className="pd-row-meta">{fmtAgo(r.ts)}</div>
+                              <div className="pd-row-meta">{fmtAgo(r.timestamp)}</div>
                           </div>
                           <div className="pd-row-actions">
                               <button

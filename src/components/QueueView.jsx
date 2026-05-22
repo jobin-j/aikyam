@@ -134,6 +134,7 @@ export default function QueueView() {
                 {playing.dedication && (
                   <div className="qv-now-ded">{playing.dedication}</div>
                 )}
+                <div className="qv-row-meta">{fmtAgo(playing.timestamp)}</div>
               </div>
               {playing.sessionKey === sessionKey && <div className="qv-mine-badge">Yours!</div>}
             </div>
@@ -165,6 +166,7 @@ export default function QueueView() {
                     {r.dedication && (
                       <div className="qv-row-ded">{r.dedication}</div>
                     )}
+                    <div className="qv-row-meta">{fmtAgo(r.timestamp)}</div>
                   </div>
                   {r.sessionKey === sessionKey && <div className="qv-mine-badge">Yours!</div>}
                 </div>
