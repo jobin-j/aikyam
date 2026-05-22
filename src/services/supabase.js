@@ -25,7 +25,7 @@ export const getRequests = async () => {
 // ── Add new request ───────────────────────────
 export const addRequest = async ({ song, dedication, sessionKey }) => {
   const id = Date.now().toString();
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/requests`, {
+  await fetch(`${SUPABASE_URL}/rest/v1/requests`, {
     method: 'POST',
     headers: { ...headers, 'Prefer': 'return=representation' },
     body: JSON.stringify({
