@@ -102,13 +102,6 @@ export default function QueueView() {
                     <div className="qv-my-label">Your Request</div>
                     <div className="qv-my-song">{myRequest.song}</div>
                     <div className="qv-my-pos">Position #{myPosition} in queue</div>
-                    <button
-                      className="qv-cancel-btn"
-                      onClick={() => handleCancel(myRequest.id)}
-                      disabled={cancelling === myRequest.id}
-                    >
-                      {cancelling === myRequest.id ? 'Cancelling…' : 'Cancel Request'}
-                    </button>
                   </div>
                 </>
               )}
