@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PerformerDashboard from './PerformerDashboard';
 import './PerformerGuard.scss';
 
-const PIN = '2412';
+const PIN = process.env.REACT_APP_PERFORMER_PIN;
 
 export default function PerformerGuard() {
   const [input,    setInput]    = useState('');
