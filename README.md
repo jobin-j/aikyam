@@ -82,6 +82,23 @@ npm start
 
 ---
 
+## 📸 Screenshots
+
+### Homepage + AI Virtual Assistant
+![Homepage](screenshots/01-homepage-chatbot.png)
+
+### AI Song Suggester — Mood-based Recommendations
+![AI Song Suggester](screenshots/02-ai-song-suggester.png)
+
+### Song Request Form
+![Song Request Form](screenshots/03-song-request-form.png)
+
+### Request Confirmed — Queue Position
+![Request Confirmed](screenshots/04-request-confirmed.png)
+
+### Performer Dashboard
+![Performer Dashboard](screenshots/05-performer-dashboard.png)
+
 ## 👨‍💻 Built by
 
 **Jobin John** — Senior Front-End Engineer  
