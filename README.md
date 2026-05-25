@@ -1,70 +1,88 @@
-# Getting Started with Create React App
+# 🎵 Aikyam — AI-Powered Song Request Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> Live song request platform for **Aikyam**, a Bollywood fusion acoustic duo based in Bengaluru.  
+> Audiences request songs, AI suggests what fits the vibe, performers manage the queue in real time.
 
-## Available Scripts
+🔗 **Live App:** https://aikyam-official.netlify.app
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## ✨ Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 🤖 **AI Chatbot** — Powered by Claude AI (Haiku) for answering questions about the band, schedule, and events
+- 🎶 **AI Song Suggester** — Claude Sonnet suggests songs based on mood and preference
+- 📋 **Real-time Queue** — Supabase-backed live song request queue
+- 🎤 **Performer Dashboard** — Protected view for managing and updating request status
+- 👥 **Role-based Views** — Separate UI for audience and performers
+- 📱 **Responsive Design** — Mobile-first, works on any device
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🛠 Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, React Router |
+| Styling | SASS/SCSS |
+| AI | Claude API (Haiku + Sonnet) via Netlify Functions |
+| Database | Supabase (real-time requests) |
+| Sheets Integration | Google Apps Script |
+| Deployment | Netlify (with serverless functions) |
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🔐 Security
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- Claude API key is **never exposed to the browser** — all AI calls route through a Netlify serverless function
+- Performer dashboard is PIN-protected via environment variable
+- All sensitive config managed through environment variables
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## 🚀 Getting Started
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 1. Clone the repo
+```bash
+git clone https://github.com/jobin-j/aikyam.git
+cd aikyam
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 3. Set up environment variables
+```bash
+cp .env.example .env
+```
+Fill in your values in `.env`:
+```
+REACT_APP_PERFORMER_PIN=your_pin
+REACT_APP_GOOGLE_SCRIPT_URL=your_google_apps_script_url
+REACT_APP_SUPABASE_URL=your_supabase_url
+REACT_APP_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 4. Run locally
+```bash
+npm start
+```
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📱 App Views
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+| Route | Description |
+|---|---|
+| `/` | Landing page — band info, booking |
+| `/#/request` | Audience song request form + AI suggester |
+| `/#/queue` | Live queue view for audience |
+| `/#/performer` | PIN-protected performer dashboard |
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 👨‍💻 Built by
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Jobin John** — Senior Front-End Engineer  
+[LinkedIn](https://linkedin.com/in/jobinjohn) • [GitHub](https://github.com/jobin-j)
